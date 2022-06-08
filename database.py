@@ -1,5 +1,7 @@
+from ast import Raise
 import ekbMod
 import os
+import sqlite3
 
 ekbMod.clear_scren()
 
@@ -7,8 +9,8 @@ iniSettings = {
     "updated_from_file": False,
     "ini_file_exists": True,
     "database": "File",
-    "FileDB_path": ".\\FileDB\\",
-    "FileDB_extension": "tdb",
+    "filedb_path": ".\\FileDB\\",
+    "filedb_extension": "tdb",
 }
 
 ###################################################################
@@ -23,8 +25,8 @@ def fSql_create_Table(table_name, headers):
         result = fFile_create_table(table_name, headers)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_create_table(table_name, headers)
+        return result
 
     raise Exception("No database to read from")
 
@@ -37,8 +39,8 @@ def fSql_add(table_name, newValues):
         result = fFile_add(table_name, newValues)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_add(table_name, newValues)
+        return result
 
     raise Exception("No database to read from")
 
@@ -51,8 +53,8 @@ def fSql_read_all(table_name):
         result = fFile_read_all(table_name)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_read_all(table_name)
+        return result
 
     raise Exception("No database to read from")
 
@@ -101,7 +103,115 @@ def fsql_delete_line(table_name, table_column, searchValue):
 
 
 ###################################################################
+# SQLite MANAGEMENT FUNCTIONS
+def fSQLit_create_conenction(table_name, fileName):
+    conn = None
+    try:
+        conn = sqlite3.connect(fileName)
+        return conn
+    except Exception:
+        raise Exception("SQL-03, Not able to open database file.")
+
+    return conn
+
+
+def fSQLite_create_table(table_name: str, headers):
+    global iniSettings
+
+    db_path = iniSettings["sqlite_path"]
+    db_file = str(db_path + table_name + iniSettings["sqlite_db_extension"])
+
+    bExists = ekbMod.verify_if_file_exists(db_file)
+    if not bExists:
+        if not os.path.exists(iniSettings["sqlite_path"]):
+            os.makedirs(iniSettings["sqlite_path"])
+
+    conn = fSQLit_create_conenction(table_name, db_file)
+
+    # Build SQL
+    sSql = f"CREATE TABLE IF NOT EXISTS {table_name} ("
+    for val in headers:
+        items = val.split(":")
+        if len(items) != 2:
+            conn.close()
+            raise Exception("SQL-04, Table input parameters incorrect.")
+        sSql += f"{items[0].lower().strip()} {items[1].lower().strip()},"
+
+    sSql = sSql[:-1]
+    sSql += ");"
+    # execute sql
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql)
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-06, Error while writing to database")
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return True
+
+
+def fSQLite_add(table_name, newValues):
+    global iniSettings
+
+    db_file = str(iniSettings["sqlite_path"] +
+                  table_name + iniSettings["sqlite_db_extension"])
+    conn = fSQLit_create_conenction(table_name, db_file)
+
+    sSql = "insert into cliente Values (?,?,?,?,?,?);"
+
+    data_tuple = ()
+    lValues = list(newValues.values())
+    for val in lValues:
+        data_tuple += (f'{val}',)
+
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql, data_tuple)
+            conn.commit()
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-06, Error while writing to database:")
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return True
+
+
+def fSQLite_read_all(table_name):
+    global iniSettings
+
+    db_file = str(iniSettings["sqlite_path"] +
+                  table_name + iniSettings["sqlite_db_extension"])
+    conn = fSQLit_create_conenction(table_name, db_file)
+
+    sSql = f"select * from {table_name};"
+
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql)
+            rows = c.fetchall()
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-07, Error while reading database:", e)
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return rows
+
+###################################################################
 # FILE MANAGEMENT FUNCTIONS
+
 
 def fFile_create_table(table_name: str, headers):
     # fix table name and headers to lower()
@@ -109,13 +219,13 @@ def fFile_create_table(table_name: str, headers):
     headers = [x.lower() for x in headers]
 
     # get file name
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if bExists:
         raise FileNotFoundError("SQL-03, Table already exists.")
     else:
-        if not os.path.exists(iniSettings["FileDB_path"]):
-            os.makedirs(iniSettings["FileDB_path"])
+        if not os.path.exists(iniSettings["filedb_path"]):
+            os.makedirs(iniSettings["filedb_path"])
 
     # generate header string
     sHeader = ""
@@ -131,7 +241,7 @@ def fFile_create_table(table_name: str, headers):
 
 
 def fFile_add(table_name, newValues):
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -172,7 +282,7 @@ def fFile_add(table_name, newValues):
 def fFile_read_all(table_name):
 
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -195,7 +305,7 @@ def fFile_read_all(table_name):
 
 def fFile_read_one(table_name, table_column: str, searchValue: str):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -221,7 +331,7 @@ def fFile_read_one(table_name, table_column: str, searchValue: str):
 
 def fFile_update_line(table_name, table_column: str, searchValue: str, newValues):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -295,7 +405,7 @@ def fFile_update_line(table_name, table_column: str, searchValue: str, newValues
 
 def fFile_delete_line(table_name, table_column: str, searchValue: str):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["FileDB_path"]}{table_name}.{iniSettings["FileDB_extension"]}'
+    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -341,8 +451,8 @@ def fUpdate_INI_Settings():
     #       "updated_from_file": False,
     #       "ini_file_exists": True,
     #       "database": "File",
-    #       "FileDB_path": ".\\FileDB\\",
-    #       "FileDB_extension": "tdb",
+    #       "filedb_path": ".\\FileDB\\",
+    #       "filedb_extension": "tdb",
 
     if (not iniSettings["ini_file_exists"]) or (not ekbMod.verify_if_file_exists("settings.ini")):
         iniSettings["ini_file_exists"] = False
@@ -374,9 +484,9 @@ def fFile_Search_column(columns, searchValue):
 ###################################################################
 # TESTING
 # TODO TODO
-# --
+# -- SQLLITE -- add has to be with full sql. add one and add all are same function
 
-# FILE DATABASE CRUD EXAMPLES
+# DATABASE CRUD EXAMPLES
 try:
     op = 5
     a = ""
@@ -384,19 +494,26 @@ try:
     match op:
 
         case 1:  # -- create table
-            aHeaders = ["Id", "Name", "Age", "Heigth", "Num"]
-            a = fFile_create_table("CrEW", aHeaders)
-        case 2:  # -- Complete Add
-            dictAdd = {"ID": 1, "name": "Eduard",
-                       "age": 39, "heigth": 183, "NUM": 7}
-            a = fSql_add("crew", dictAdd)
-        case 3:  # -- Incomplete ADD
+            # for File DB:
+            # aHeaders = ["Id", "Name", "Age", "Heigth", "Num"]
+            # for SQLite DB:
+            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                        "age:integer", "heigth:real", "address:text", "CPF:text"]
+            a = fSql_create_Table("cliente", aHeaders)
+            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                        "salary:real", "sells:ïnteger"]
+            a = fSql_create_Table("vendedor", aHeaders)
+        case 2:  # -- ADD with all fields
+            dictAdd = {"ID": 3, "name": "Aldo",
+                       "age": 44, "heigth": 2.33, "address": "Alameda", "CPF": "444444"}
+            a = fSql_add("cliente", dictAdd)
+        case 3:  # -- ADD with some fields
             dictAdd = {"ID": 12, "name": "Gustav", "age": 55}
             a = fSql_add("crew", dictAdd)
         case 4:  # -- Read One Example
             a = fsql_read_one("crew", "Id", "1")
         case 5:  # -- Read ALL Example
-            a = fSql_read_all("crew")
+            a = fSql_read_all("cliente")
         case 6:  # -- update one or many example
             dictUpdate = {"NAME": "Hugo", "heigth": 160}
             a = fsql_update_line("crew", "ID", "1", dictUpdate)
