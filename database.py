@@ -3,9 +3,10 @@ import os
 
 ekbMod.clear_scren()
 
-# TODO TODO - think how to start iniSettings
 iniSettings = {
-    "Database": "File",
+    "updated_from_file": False,
+    "ini_file_exists": True,
+    "database": "File",
     "FileDB_path": ".\\FileDB\\",
     "FileDB_extension": "tdb",
 }
@@ -15,40 +16,88 @@ iniSettings = {
 
 
 def fSql_create_Table(table_name, headers):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_create_table(table_name, headers)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 def fSql_add(table_name, newValues):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_add(table_name, newValues)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 def fSql_read_all(table_name):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_read_all(table_name)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 def fsql_read_one(table_name, table_column, searchValue):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_read_one(table_name, table_column, searchValue)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 def fsql_update_line(table_name, table_column, searchValue, newValues):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_update_line(
             table_name, table_column, searchValue, newValues)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 def fsql_delete_line(table_name, table_column, searchValue):
-    if iniSettings["Database"] == "File":
+    global iniSettings
+    fUpdate_INI_Settings()
+
+    if iniSettings["database"] == "file":
         result = fFile_delete_line(table_name, table_column, searchValue)
         return result
+    if iniSettings["database"] == "sqlite":
+        # TODO TODO -- develop sqlite function
+        return [1, 2, 3]
+
+    raise Exception("No database to read from")
 
 
 ###################################################################
@@ -285,10 +334,36 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
 ###################################################################
 # GENERAL FUNCTIONS
 
-# returns column position or exception
+
+def fUpdate_INI_Settings():
+    global iniSettings
+    # default INI settings:
+    #       "updated_from_file": False,
+    #       "ini_file_exists": True,
+    #       "database": "File",
+    #       "FileDB_path": ".\\FileDB\\",
+    #       "FileDB_extension": "tdb",
+
+    if (not iniSettings["ini_file_exists"]) or (not ekbMod.verify_if_file_exists("settings.ini")):
+        iniSettings["ini_file_exists"] = False
+        return
+
+    with open("settings.ini", 'r') as file:
+        list_lines = file.readlines()
+
+    for line in list_lines:
+        line = line.strip()
+        if line != '' and line[0] != '#':
+            values = line.split("=")
+            if len(values) > 1:
+                iniSettings[(values[0].strip()).lower()] = (
+                    values[1].strip()).lower()
+
+    iniSettings["updated_from_file"] = True
 
 
 def fFile_Search_column(columns, searchValue):
+    # returns column position or exception
     for i, str in enumerate(columns):
         if str.lower() == searchValue.lower():
             # column found. store position
@@ -303,35 +378,32 @@ def fFile_Search_column(columns, searchValue):
 
 # FILE DATABASE CRUD EXAMPLES
 try:
-    op = 2
+    op = 5
     a = ""
 
     match op:
-        # -- create table
-        case 1:
-            aHeaders = ["ID", "NaME", "AgE", "heigth", "NUM"]
+
+        case 1:  # -- create table
+            aHeaders = ["Id", "Name", "Age", "Heigth", "Num"]
             a = fFile_create_table("CrEW", aHeaders)
-        # -- Complete Add
-        case 2:
+        case 2:  # -- Complete Add
             dictAdd = {"ID": 1, "name": "Eduard",
                        "age": 39, "heigth": 183, "NUM": 7}
             a = fSql_add("crew", dictAdd)
-        # -- Incomplete ADD
-        case 3:
+        case 3:  # -- Incomplete ADD
             dictAdd = {"ID": 12, "name": "Gustav", "age": 55}
             a = fSql_add("crew", dictAdd)
-
-    # -- add
-
-    # -- Read One Example
-    # a = fsql_read_one("crew", "Id", "1")
-    # -- Read ALL Example
-    # a = fSql_read_all("crew")
-    # -- update one or many example
-    # dictUpdate = {"NAME": "Hugo", "heigth": 160}
-    # a = fsql_update_line("crew", "ID", "1", dictUpdate)
-    # -- Delete Example (one or many)
-    # a = fsql_delete_line("crew", "id", "14")
+        case 4:  # -- Read One Example
+            a = fsql_read_one("crew", "Id", "1")
+        case 5:  # -- Read ALL Example
+            a = fSql_read_all("crew")
+        case 6:  # -- update one or many example
+            dictUpdate = {"NAME": "Hugo", "heigth": 160}
+            a = fsql_update_line("crew", "ID", "1", dictUpdate)
+        case 7:  # -- Delete Example (one or many)
+            a = fsql_delete_line("crew", "id", "14")
+        case _:  # case default
+            a = "No valid option entered"
 
     print(a)
 except ValueError as error:
