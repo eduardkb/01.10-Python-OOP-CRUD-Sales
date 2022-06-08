@@ -1,4 +1,5 @@
 from ast import Raise
+import ssl
 import ekbMod
 import os
 import sqlite3
@@ -67,8 +68,8 @@ def fsql_read_one(table_name, table_column, searchValue):
         result = fFile_read_one(table_name, table_column, searchValue)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_read_one(table_name, table_column, searchValue)
+        return result
 
     raise Exception("No database to read from")
 
@@ -119,7 +120,9 @@ def fSQLite_create_table(table_name: str, headers):
     global iniSettings
 
     db_path = iniSettings["sqlite_path"]
-    db_file = str(db_path + table_name + iniSettings["sqlite_db_extension"])
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
 
     bExists = ekbMod.verify_if_file_exists(db_file)
     if not bExists:
@@ -158,16 +161,33 @@ def fSQLite_create_table(table_name: str, headers):
 def fSQLite_add(table_name, newValues):
     global iniSettings
 
-    db_file = str(iniSettings["sqlite_path"] +
-                  table_name + iniSettings["sqlite_db_extension"])
+    db_path = iniSettings["sqlite_path"]
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
+
     conn = fSQLit_create_conenction(table_name, db_file)
 
-    sSql = "insert into cliente Values (?,?,?,?,?,?);"
-
+    # generating tuple only with values to add
     data_tuple = ()
     lValues = list(newValues.values())
     for val in lValues:
         data_tuple += (f'{val}',)
+
+    # adding correct number of ?
+    sSpaces = ''
+    for i in range(len(lValues)):
+        sSpaces += ' ?,'
+    sSpaces = sSpaces[:-1]
+
+    # separate columns
+    lCol = list(newValues.keys())
+    sColumns = ""
+    for val in lCol:
+        sColumns += f" {val},"
+    sColumns = sColumns[:-1]
+
+    sSql = f"insert into {table_name} ({sColumns}) Values ({sSpaces});"
 
     if conn is not None:
         try:
@@ -188,11 +208,42 @@ def fSQLite_add(table_name, newValues):
 def fSQLite_read_all(table_name):
     global iniSettings
 
-    db_file = str(iniSettings["sqlite_path"] +
-                  table_name + iniSettings["sqlite_db_extension"])
+    db_path = iniSettings["sqlite_path"]
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
+
     conn = fSQLit_create_conenction(table_name, db_file)
 
     sSql = f"select * from {table_name};"
+
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql)
+            rows = c.fetchall()
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-07, Error while reading database:", e)
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return rows
+
+
+def fSQLite_read_one(table_name, table_column, searchValue):
+    global iniSettings
+
+    db_path = iniSettings["sqlite_path"]
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
+
+    conn = fSQLit_create_conenction(table_name, db_file)
+
+    sSql = f"select * from {table_name} where {table_column} = {searchValue};"
 
     if conn is not None:
         try:
@@ -484,19 +535,15 @@ def fFile_Search_column(columns, searchValue):
 ###################################################################
 # TESTING
 # TODO TODO
-# -- SQLLITE -- add has to be with full sql. add one and add all are same function
+# -- file -- does not accept types. make function ignore types
 
 # DATABASE CRUD EXAMPLES
 try:
-    op = 5
+    op = 4
     a = ""
-
     match op:
 
-        case 1:  # -- create table
-            # for File DB:
-            # aHeaders = ["Id", "Name", "Age", "Heigth", "Num"]
-            # for SQLite DB:
+        case 1:  # -- CREATE DB and tables
             aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
                         "age:integer", "heigth:real", "address:text", "CPF:text"]
             a = fSql_create_Table("cliente", aHeaders)
@@ -504,16 +551,25 @@ try:
                         "salary:real", "sells:ïnteger"]
             a = fSql_create_Table("vendedor", aHeaders)
         case 2:  # -- ADD with all fields
-            dictAdd = {"ID": 3, "name": "Aldo",
-                       "age": 44, "heigth": 2.33, "address": "Alameda", "CPF": "444444"}
+            dictAdd = {"ID": 4, "name": "Hugo",
+                       "age": 33, "heigth": 1.77, "address": "Vitoria", "CPF": "457525"}
             a = fSql_add("cliente", dictAdd)
+            dictAdd = {"ID": 2, "name": "CLaudio",
+                       "salary": 1600, "sells": 25}
+            a = fSql_add("vendedor", dictAdd)
         case 3:  # -- ADD with some fields
-            dictAdd = {"ID": 12, "name": "Gustav", "age": 55}
-            a = fSql_add("crew", dictAdd)
+            dictAdd = {"name": "Nair", "age": 33, "CPF": "157452"}
+            a = fSql_add("cliente", dictAdd)
+            dictAdd = {"name": "Erica", "salary": 1600}
+            a = fSql_add("vendedor", dictAdd)
         case 4:  # -- Read One Example
-            a = fsql_read_one("crew", "Id", "1")
+            a = fsql_read_one("vendedor", "id", 2)
         case 5:  # -- Read ALL Example
             a = fSql_read_all("cliente")
+            print("Cliente:", a)
+            a = fSql_read_all("vendedor")
+            print("vendedor:", a)
+            a = True
         case 6:  # -- update one or many example
             dictUpdate = {"NAME": "Hugo", "heigth": 160}
             a = fsql_update_line("crew", "ID", "1", dictUpdate)
