@@ -1,5 +1,3 @@
-from ast import Raise
-import ssl
 import ekbMod
 import os
 import sqlite3
@@ -536,6 +534,7 @@ def fFile_Search_column(columns, searchValue):
 # TESTING
 # TODO TODO
 # -- file -- does not accept types. make function ignore types
+# -- file -- test all functions again
 
 # DATABASE CRUD EXAMPLES
 try:
