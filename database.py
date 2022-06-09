@@ -1,5 +1,3 @@
-import enum
-import ssl
 import ekbMod
 import os
 import sqlite3
@@ -333,7 +331,7 @@ def fSQLite_delete_line(table_name, table_column, searchValue):
 def fFile_create_table(table_name: str, headers):
     # fix table name and headers to lower()
     table_name = table_name.lower()
-    headers = [x.lower() for x in headers]
+    headers = [(x.split(":")[0]).lower() for x in headers]
 
     # get file name
     sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
@@ -429,6 +427,7 @@ def fFile_read_one(table_name, table_column: str, searchValue: str):
 
     items = []
     # reading file
+    searchValue = str(searchValue)
     with open(sFileName, 'r') as file:
         for i, line in enumerate(file):
             if i == 0:
@@ -464,6 +463,7 @@ def fFile_update_line(table_name, table_column: str, searchValue: str, newValues
 
     # search lines to update
     aToUpdate = []
+    searchValue = str(searchValue)
     for i, line in enumerate(lines):
         if i > 0:
             stemp = line.replace('\n', '')
@@ -537,6 +537,7 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
     iCol = fFile_Search_column(sTemp, table_column)
 
     # search lines to delete
+    searchValue = str(searchValue)
     aToDelete = []
     for i, line in enumerate(lines):
         if i > 0:
@@ -601,8 +602,7 @@ def fFile_Search_column(columns, searchValue):
 ###################################################################
 # TESTING
 # TODO TODO
-# -- file -- does not accept types. make function ignore types
-# -- file -- test all functions again
+# -- file -- verify encoding (acentuaçao nao grava e nao lê)
 
 # DATABASE CRUD EXAMPLES
 ekbMod.clear_scren()
@@ -620,11 +620,11 @@ try:
                         "salary:real", "sells:ïnteger"]
             a = fSql_create_Table("vendedor", aHeaders)
         case 2:  # -- ADD with all fields
-            dictAdd = {"ID": 22, "name": "Hugo",
-                       "age": 33, "heigth": 1.77, "address": "Vitoria", "CPF": "457525"}
+            dictAdd = {"ID": 4, "name": "Kelson",
+                       "age": 44, "heigth": 4.44, "address": "Avenida", "CPF": "444444"}
             a = fSql_add("cliente", dictAdd)
-            dictAdd = {"ID": 22, "name": "CLaudio",
-                       "salary": 1600, "sells": 25}
+            dictAdd = {"ID": 4, "name": "Xena",
+                       "salary": 4400, "sells": 140}
             a = fSql_add("vendedor", dictAdd)
         case 3:  # -- ADD with some fields
             dictAdd = {"name": "Basel", "age": 45, "CPF": "452584"}
@@ -632,7 +632,7 @@ try:
             dictAdd = {"name": "Nóia", "salary": 3600}
             a = fSql_add("vendedor", dictAdd)
         case 4:  # -- Read One Example
-            a = fsql_read_one("vendedor", "id", 2)
+            a = fsql_read_one("Cliente", "id", 1)
         case 5:  # -- Read ALL Example
             a = fSql_read_all("cliente")
             print("Cliente:", a)
@@ -640,10 +640,10 @@ try:
             print("vendedor:", a)
             a = True
         case 6:  # -- update one or many example
-            dictUpdate = {"id": 11, "NamE": "Patrick", "cpf": 951753}
-            a = fsql_update_line("cliente", "id", 3, dictUpdate)
+            dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
+            a = fsql_update_line("vendedor", "id", 2, dictUpdate)
         case 7:  # -- Delete Example (one or many)
-            a = fsql_delete_line("cliente", "age", "44")
+            a = fsql_delete_line("vendedor", "sells", 999)
         case _:  # case default
             a = "No valid option entered"
 
