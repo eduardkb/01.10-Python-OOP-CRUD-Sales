@@ -604,55 +604,56 @@ def fFile_Search_column(columns, searchValue):
 # TODO TODO
 # -- file -- verify encoding (acentuaçao nao grava e nao lê)
 
-# DATABASE CRUD EXAMPLES
-ekbMod.clear_scren()
-try:
+if __name__ == "__main__":
+    # DATABASE CRUD EXAMPLES
+    ekbMod.clear_scren()
+    try:
 
-    op = 5
-    a = ""
-    match op:
+        op = 5
+        a = ""
+        match op:
 
-        case 1:  # -- CREATE DB and tables
-            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
-                        "age:integer", "heigth:real", "address:text", "CPF:text"]
-            a = fSql_create_Table("cliente", aHeaders)
-            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
-                        "salary:real", "sells:ïnteger"]
-            a = fSql_create_Table("vendedor", aHeaders)
-        case 2:  # -- ADD with all fields
-            dictAdd = {"ID": 4, "name": "Kelson",
-                       "age": 44, "heigth": 4.44, "address": "Avenida", "CPF": "444444"}
-            a = fSql_add("cliente", dictAdd)
-            dictAdd = {"ID": 4, "name": "Xena",
-                       "salary": 4400, "sells": 140}
-            a = fSql_add("vendedor", dictAdd)
-        case 3:  # -- ADD with some fields
-            dictAdd = {"name": "Basel", "age": 45, "CPF": "452584"}
-            a = fSql_add("cliente", dictAdd)
-            dictAdd = {"name": "Nóia", "salary": 3600}
-            a = fSql_add("vendedor", dictAdd)
-        case 4:  # -- Read One Example
-            a = fsql_read_one("Cliente", "id", 1)
-        case 5:  # -- Read ALL Example
-            a = fSql_read_all("cliente")
-            print("Cliente:", a)
-            a = fSql_read_all("vendedor")
-            print("vendedor:", a)
-            a = True
-        case 6:  # -- update one or many example
-            dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
-            a = fsql_update_line("vendedor", "id", 2, dictUpdate)
-        case 7:  # -- Delete Example (one or many)
-            a = fsql_delete_line("vendedor", "sells", 999)
-        case _:  # case default
-            a = "No valid option entered"
+            case 1:  # -- CREATE DB and tables
+                aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                            "age:integer", "heigth:real", "address:text", "CPF:text"]
+                a = fSql_create_Table("cliente", aHeaders)
+                aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                            "salary:real", "sells:ïnteger"]
+                a = fSql_create_Table("vendedor", aHeaders)
+            case 2:  # -- ADD with all fields
+                dictAdd = {"ID": 4, "name": "Kelson",
+                           "age": 44, "heigth": 4.44, "address": "Avenida", "CPF": "444444"}
+                a = fSql_add("cliente", dictAdd)
+                dictAdd = {"ID": 4, "name": "Xena",
+                           "salary": 4400, "sells": 140}
+                a = fSql_add("vendedor", dictAdd)
+            case 3:  # -- ADD with some fields
+                dictAdd = {"name": "Basel", "age": 45, "CPF": "452584"}
+                a = fSql_add("cliente", dictAdd)
+                dictAdd = {"name": "Nóia", "salary": 3600}
+                a = fSql_add("vendedor", dictAdd)
+            case 4:  # -- Read One Example
+                a = fsql_read_one("Cliente", "id", 1)
+            case 5:  # -- Read ALL Example
+                a = fSql_read_all("cliente")
+                print("Cliente:", a)
+                a = fSql_read_all("vendedor")
+                print("vendedor:", a)
+                a = True
+            case 6:  # -- update one or many example
+                dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
+                a = fsql_update_line("vendedor", "id", 2, dictUpdate)
+            case 7:  # -- Delete Example (one or many)
+                a = fsql_delete_line("vendedor", "sells", 999)
+            case _:  # case default
+                a = "No valid option entered"
 
-    print(a)
-except ValueError as error:
-    print('Caught error:', error)
-except FileNotFoundError as error:
-    print('Caught error:', error)
-except Exception as error:
-    print('Caught error:', error)
+        print(a)
+    except ValueError as error:
+        print('Caught error:', error)
+    except FileNotFoundError as error:
+        print('Caught error:', error)
+    except Exception as error:
+        print('Caught error:', error)
 
-print('END')
+    print('END')
