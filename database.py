@@ -1,8 +1,8 @@
+import enum
+import ssl
 import ekbMod
 import os
 import sqlite3
-
-ekbMod.clear_scren()
 
 iniSettings = {
     "updated_from_file": False,
@@ -81,8 +81,9 @@ def fsql_update_line(table_name, table_column, searchValue, newValues):
             table_name, table_column, searchValue, newValues)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_update_line(
+            table_name, table_column, searchValue, newValues)
+        return result
 
     raise Exception("No database to read from")
 
@@ -95,8 +96,8 @@ def fsql_delete_line(table_name, table_column, searchValue):
         result = fFile_delete_line(table_name, table_column, searchValue)
         return result
     if iniSettings["database"] == "sqlite":
-        # TODO TODO -- develop sqlite function
-        return [1, 2, 3]
+        result = fSQLite_delete_line(table_name, table_column, searchValue)
+        return result
 
     raise Exception("No database to read from")
 
@@ -167,10 +168,8 @@ def fSQLite_add(table_name, newValues):
     conn = fSQLit_create_conenction(table_name, db_file)
 
     # generating tuple only with values to add
-    data_tuple = ()
     lValues = list(newValues.values())
-    for val in lValues:
-        data_tuple += (f'{val}',)
+    data_tuple = tuple(lValues)
 
     # adding correct number of ?
     sSpaces = ''
@@ -194,7 +193,7 @@ def fSQLite_add(table_name, newValues):
             conn.commit()
         except Exception as e:
             conn.close()
-            raise Exception("SQL-06, Error while writing to database:")
+            raise Exception("SQL-06, Error while writing to database:", e)
     else:
         conn.close()
         raise Exception("SQL-05, Connection to database lost")
@@ -258,6 +257,75 @@ def fSQLite_read_one(table_name, table_column, searchValue):
     conn.close()
     return rows
 
+
+def fSQLite_update_line(
+        table_name, table_column, searchValue, newValues):
+    global iniSettings
+
+    db_path = iniSettings["sqlite_path"]
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
+
+    conn = fSQLit_create_conenction(table_name, db_file)
+
+    # put the SET SQL clausule in a string
+    sSet = ''
+    for key, val in newValues.items():
+        sSet += f" '{key}'=?,"
+    sSet = sSet.strip()
+    sSet = sSet[:-1]
+
+    # create tuple with values to change
+    tValues = tuple(list(newValues.values()))
+
+    sSql = f"UPDATE {table_name} SET {sSet} WHERE {table_column} = '{searchValue}';"
+
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql, tValues)
+            conn.commit()
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-06, Error while updating table:", e)
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return True
+
+
+def fSQLite_delete_line(table_name, table_column, searchValue):
+    global iniSettings
+
+    db_path = iniSettings["sqlite_path"]
+    db_name = iniSettings["sqlite_db_name"]
+    db_exten = iniSettings["sqlite_db_extension"]
+    db_file = str(db_path + db_name + db_exten)
+
+    conn = fSQLit_create_conenction(table_name, db_file)
+    #sSql = f"DELETE FROM {table_name} WHERE {table_column} = '{searchValue}';"
+    sSql = f"DELETE FROM {table_name} WHERE {table_column} = ?;"
+
+    tValue = tuple()
+    tValue += (searchValue,)
+
+    if conn is not None:
+        try:
+            c = conn.cursor()
+            c.execute(sSql, tValue)
+            conn.commit()
+        except Exception as e:
+            conn.close()
+            raise Exception("SQL-06, Error while updating table:", e)
+    else:
+        conn.close()
+        raise Exception("SQL-05, Connection to database lost")
+
+    conn.close()
+    return True
 ###################################################################
 # FILE MANAGEMENT FUNCTIONS
 
@@ -537,8 +605,10 @@ def fFile_Search_column(columns, searchValue):
 # -- file -- test all functions again
 
 # DATABASE CRUD EXAMPLES
+ekbMod.clear_scren()
 try:
-    op = 4
+
+    op = 5
     a = ""
     match op:
 
@@ -550,16 +620,16 @@ try:
                         "salary:real", "sells:ïnteger"]
             a = fSql_create_Table("vendedor", aHeaders)
         case 2:  # -- ADD with all fields
-            dictAdd = {"ID": 4, "name": "Hugo",
+            dictAdd = {"ID": 22, "name": "Hugo",
                        "age": 33, "heigth": 1.77, "address": "Vitoria", "CPF": "457525"}
             a = fSql_add("cliente", dictAdd)
-            dictAdd = {"ID": 2, "name": "CLaudio",
+            dictAdd = {"ID": 22, "name": "CLaudio",
                        "salary": 1600, "sells": 25}
             a = fSql_add("vendedor", dictAdd)
         case 3:  # -- ADD with some fields
-            dictAdd = {"name": "Nair", "age": 33, "CPF": "157452"}
+            dictAdd = {"name": "Basel", "age": 45, "CPF": "452584"}
             a = fSql_add("cliente", dictAdd)
-            dictAdd = {"name": "Erica", "salary": 1600}
+            dictAdd = {"name": "Nóia", "salary": 3600}
             a = fSql_add("vendedor", dictAdd)
         case 4:  # -- Read One Example
             a = fsql_read_one("vendedor", "id", 2)
@@ -570,10 +640,10 @@ try:
             print("vendedor:", a)
             a = True
         case 6:  # -- update one or many example
-            dictUpdate = {"NAME": "Hugo", "heigth": 160}
-            a = fsql_update_line("crew", "ID", "1", dictUpdate)
+            dictUpdate = {"id": 11, "NamE": "Patrick", "cpf": 951753}
+            a = fsql_update_line("cliente", "id", 3, dictUpdate)
         case 7:  # -- Delete Example (one or many)
-            a = fsql_delete_line("crew", "id", "14")
+            a = fsql_delete_line("cliente", "age", "44")
         case _:  # case default
             a = "No valid option entered"
 
