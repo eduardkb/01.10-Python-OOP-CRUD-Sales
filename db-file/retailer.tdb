@@ -13,3 +13,6 @@ id,cpf,name,manager,salary,active
 2,229,Julia,Marco,3600,True
 3,339,Otavio,Luiza,1500,False
 4,449,Zuleima,Marco,2100,True
+18,888,aaaa,aaaa,1234,True
+19,888,aaaa,aaaa,1234,True
+20,888,aaaa,aaaa,1234,True

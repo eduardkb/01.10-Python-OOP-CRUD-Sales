@@ -7,6 +7,7 @@ Not Urgent:
         so that DB handles ID generation
 """
 
+from tkinter.messagebox import NO
 import database
 import ekbMod
 
@@ -27,6 +28,10 @@ class Client():
         self.date_nasc = date_nasc
 
         if not source_db:
+            # get next id to write on DB if 0 or less was passed as ID
+            if self.id < 1:
+                self.id = Client.fGet_next_id()
+            # write on DB
             self.fwrite_to_db()
 
         Client.all_items.append(self)
@@ -95,6 +100,19 @@ class Client():
         Client.all_items = [
             x for x in Client.all_items if str(x.id) != str(id_search)]
 
+    @staticmethod
+    def fGet_next_id():
+        # if all items is empty, read all items
+        if len(Client.all_items) == 0:
+            Client.fRead_all_from_db()
+
+        # define next id
+        id_max = int(1)
+        for obj in Client.all_items:
+            if id_max < int(obj.id):
+                id_max = int(obj.id)
+        return id_max + 1
+
 
 class Retailer():
     db_fields = ["id:integer PRIMARY KEY", "cpf:text", "name:text",
@@ -111,6 +129,10 @@ class Retailer():
         self.active = active
 
         if not source_db:
+            # get next id to write on DB if 0 or less was passed as ID
+            if self.id < 1:
+                self.id = Retailer.fGet_next_id()
+            # write on DB
             self.fwrite_to_db()
 
         Retailer.all_items.append(self)
@@ -178,6 +200,19 @@ class Retailer():
         Retailer.all_items = [
             x for x in Retailer.all_items if str(x.id) != str(id_search)]
 
+    @staticmethod
+    def fGet_next_id():
+        # if all items is empty, read all items
+        if len(Retailer.all_items) == 0:
+            Retailer.fRead_all_from_db()
+
+        # define next id
+        id_max = int(1)
+        for obj in Retailer.all_items:
+            if id_max < int(obj.id):
+                id_max = int(obj.id)
+        return id_max + 1
+
 
 class Sale():
     pass
@@ -218,7 +253,7 @@ if __name__ == "__main__":
             Retailer(1, "119", "Victor", "Luiza", 1500, True)
             Retailer(2, "229", "Julia", "Marco", 3600, True)
             Retailer(3, "339", "Otavio", "Luiza", 1500, False)
-            Retailer(4, "449", "Zuleima", "Marco", 2100, True)
+            Retailer(0, "888", "aaaa", "aaaa", 1234, True)
 
     def fTest_read_all(objTest_Class):
         if objTest_Class == "Client":
@@ -245,7 +280,7 @@ if __name__ == "__main__":
         print(f"ID {id} deleted from table {objTest_Class}")
 
     objTest_Class = "Client"
-    # objTest_Class = "Retailer"
+    objTest_Class = "Retailer"
 
     # fTest_create_table(objTest_Class)
     # fTest_add(objTest_Class)
@@ -253,5 +288,5 @@ if __name__ == "__main__":
     fTest_read_all(objTest_Class)
     fTest_print_all_objects(objTest_Class)
     # fTest_update_one(objTest_Class, 2)
-    fTest_delete_one(objTest_Class, 2)
-    fTest_print_all_objects(objTest_Class)
+    # fTest_delete_one(objTest_Class, 2)
+    # fTest_print_all_objects(objTest_Class)
