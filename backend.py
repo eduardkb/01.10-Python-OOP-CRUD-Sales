@@ -273,15 +273,13 @@ class Sale():
 
         # UPDATE DATABAS
         database.fsql_update_line(
-            Client.db_table_name, "id", id_search, dictUpdate)
+            Sale.db_table_name, "id", id_search, dictUpdate)
 
         # UPDATE OBJECT
-        objUpdate.cpf = dictUpdate["cpf"]
-        objUpdate.name = dictUpdate["name"]
-        objUpdate.country = dictUpdate["country"]
-        objUpdate.city = dictUpdate["city"]
-        objUpdate.phone = dictUpdate["phone"]
-        objUpdate.date_nasc = dictUpdate["date_nasc"]
+        objUpdate.id_retailer = dictUpdate["id_retailer"]
+        objUpdate.id_client = dictUpdate["id_client"]
+        objUpdate.item_sold = dictUpdate["item_sold"]
+        objUpdate.price = dictUpdate["price"]
 
     @staticmethod
     def fDelete_line(id_search):
@@ -296,11 +294,11 @@ class Sale():
                 f"Id {id_search} to be deleted on table {Sale.db_table_name} not found.")
 
         # delete database item
-        database.fsql_delete_line(Client.db_table_name, "id", id_search)
+        database.fsql_delete_line(Sale.db_table_name, "id", id_search)
 
         # delete item from list (making a new list)
-        Client.all_items = [
-            x for x in Client.all_items if str(x.id) != str(id_search)]
+        Sale.all_items = [
+            x for x in Sale.all_items if str(x.id) != str(id_search)]
 
     @staticmethod
     def fGet_next_id():
@@ -378,8 +376,8 @@ if __name__ == "__main__":
                           "salary": 1000, "active": True}
             a = Retailer.fUpdate_line(id, dictUpdate)
         elif objTest_Class == "Sale":
-            dictUpdate = {"id_retailer": 2, "id_client": 2, "item_sold": "Tv",
-                          "price": 111}
+            dictUpdate = {"id_retailer": 8, "id_client": 8, "item_sold": "powerball",
+                          "price": 999}
             a = Sale.fUpdate_line(id, dictUpdate)
         print(f"{objTest_Class} {id} updated.")
 
@@ -403,7 +401,7 @@ if __name__ == "__main__":
     fTest_read_all(objTest_Class)
 
     fTest_print_all_objects(objTest_Class)
-    # fTest_update_one(objTest_Class, 2)
-    # fTest_delete_one(objTest_Class, 2)
+    # fTest_update_one(objTest_Class, 49)
+    fTest_delete_one(objTest_Class, 46)
 
     fTest_print_all_objects(objTest_Class)
