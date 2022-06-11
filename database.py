@@ -1,3 +1,11 @@
+"""
+TODO TODO
+Urgent
+--
+Not Urgent:
+-- file -- verify encoding (acentuaçao nao grava e nao lê)
+"""
+
 import ekbMod
 import os
 import sqlite3
@@ -337,7 +345,7 @@ def fFile_create_table(table_name: str, headers):
     sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if bExists:
-        raise FileNotFoundError("SQL-03, Table already exists.")
+        return True
     else:
         if not os.path.exists(iniSettings["filedb_path"]):
             os.makedirs(iniSettings["filedb_path"])
@@ -363,13 +371,14 @@ def fFile_add(table_name, newValues):
 
     aHeaders = []
     with open(sFileName, 'r') as file:
-        for i, line in enumerate(file):
-            if i == 0:
-                aHeaders = line
-                aHeaders = aHeaders.replace("\n", "")
-                aHeaders = aHeaders.split(",")
-                aHeaders = [x.lower() for x in aHeaders]
-                break
+        fLines = file.readlines()
+
+    # read header
+    if len(fLines) > 0:
+        aHeaders = fLines[0]
+        aHeaders = aHeaders.replace("\n", "")
+        aHeaders = aHeaders.split(",")
+        aHeaders = [x.lower() for x in aHeaders]
 
     # setup dictionary with lower case
     newValuesLow = {}
@@ -377,6 +386,26 @@ def fFile_add(table_name, newValues):
         newValuesLow[key.lower()] = value
     lDictKeys = list(newValuesLow.keys())
     lDictKeys = [x.lower() for x in lDictKeys]
+
+    # if no ID argumen read all ID's from file and find max ID
+    if not ('id' in lDictKeys) and 'id' in aHeaders:
+        # search ID position
+        iPosID = 0
+        for i, val in enumerate(aHeaders):
+            if val == 'id':
+                iPosID = i
+                break
+        maxId = 1
+        # serach max id in file
+        for i in range(1, len(fLines)):
+            aLine = fLines[i]
+            aLine = aLine.replace("\n", "")
+            aLine = aLine.split(",")
+            if maxId < int(aLine[iPosID]):
+                maxId = int(aLine[iPosID])
+        # put ID + 1 in dictionarys
+        newValuesLow['id'] = maxId+1
+        lDictKeys.append('id')
 
     # build string to add
     sAdd = "\n"
@@ -532,9 +561,9 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
         lines = file.readlines()
 
     stemp = lines[0].replace('\n', '')
-    sTemp = stemp.split(',')
+    stemp = stemp.split(',')
     # return position of search column
-    iCol = fFile_Search_column(sTemp, table_column)
+    iCol = fFile_Search_column(stemp, table_column)
 
     # search lines to delete
     searchValue = str(searchValue)
@@ -553,6 +582,8 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
     # write list with deleted entries to file
     with open(sFileName, "w") as outfile:
         for pos, line in enumerate(lines):
+            if pos == 0 and (len(lines) - len(aToDelete) <= 1):
+                line = line[:-1]
             if pos not in aToDelete:
                 outfile.write(line)
 
@@ -601,15 +632,14 @@ def fFile_Search_column(columns, searchValue):
 
 ###################################################################
 # TESTING
-# TODO TODO
-# -- file -- verify encoding (acentuaçao nao grava e nao lê)
+
 
 if __name__ == "__main__":
     # DATABASE CRUD EXAMPLES
     ekbMod.clear_scren()
     try:
 
-        op = 5
+        op = 3
         a = ""
         match op:
 
@@ -628,10 +658,12 @@ if __name__ == "__main__":
                            "salary": 4400, "sells": 140}
                 a = fSql_add("vendedor", dictAdd)
             case 3:  # -- ADD with some fields
-                dictAdd = {"name": "Basel", "age": 45, "CPF": "452584"}
-                a = fSql_add("cliente", dictAdd)
-                dictAdd = {"name": "Nóia", "salary": 3600}
-                a = fSql_add("vendedor", dictAdd)
+                dictAdd = {"name": "Basel", "country": "Brasil",
+                           "city": "Curitiba", "date_nasc": "10/06/2022"}
+                a = fSql_add("client", dictAdd)
+                dictAdd = {"name": "Nóia",
+                           "manager": "Pó", "active": "False"}
+                a = fSql_add("retailer", dictAdd)
             case 4:  # -- Read One Example
                 a = fsql_read_one("Cliente", "id", 1)
             case 5:  # -- Read ALL Example

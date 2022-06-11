@@ -1,27 +1,23 @@
-import sqlite3
-from sqlite3 import Error
+import os
+os.system("cls")
+ltest = list(range(1, 20))
+print(ltest)
 
 
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Error as e:
-        print(e)
+def ftransform(x):
+    if x % 3 == 0:
+        return f"{x} mul of 3"
+    else:
+        return ''
 
 
-if __name__ == '__main__':
-    conn = create_connection(".\dbTest\pythonsqlite.db")
-    sSql = """CREATE TABLE IF NOT EXISTS clients (
-	            id integer PRIMARY KEY,
-	            name text NOT NULL);"""
+lCalc = list(map(ftransform, ltest))
+print(lCalc)
 
-    # execute sql
-    if conn is not None:
-        try:
-            c = conn.cursor()
-            c.execute(sSql)
-        except Exception as e:
-            print(e)
+# -------------------------
+
+map(lambda num: num ** 2, numbers)
+
+print("---")
+print("END")
+print("---")
