@@ -558,9 +558,9 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
 
     # read all lines
     with open(sFileName, 'r') as file:
-        lines = file.readlines()
+        all_file_lines = file.readlines()
 
-    stemp = lines[0].replace('\n', '')
+    stemp = all_file_lines[0].replace('\n', '')
     stemp = stemp.split(',')
     # return position of search column
     iCol = fFile_Search_column(stemp, table_column)
@@ -568,7 +568,7 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
     # search lines to delete
     searchValue = str(searchValue)
     aToDelete = []
-    for i, line in enumerate(lines):
+    for i, line in enumerate(all_file_lines):
         if i > 0:
             stemp = line.replace('\n', '')
             sTemp = stemp.split(',')
@@ -579,13 +579,20 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
     if len(aToDelete) == 0:
         return False
 
+    # delete lines from object with all lines
+    aToDelete = aToDelete[::-1]
+    for item in aToDelete:
+        all_file_lines.pop(item)
+
+    # remove \n from last line in object if last line was deleted
+    if all_file_lines[len(all_file_lines)-1].find('\n') >= 0:
+        temp = all_file_lines.pop()
+        temp = temp.replace('\n', '')
+        all_file_lines.append(temp)
+
     # write list with deleted entries to file
     with open(sFileName, "w") as outfile:
-        for pos, line in enumerate(lines):
-            if pos == 0 and (len(lines) - len(aToDelete) <= 1):
-                line = line[:-1]
-            if pos not in aToDelete:
-                outfile.write(line)
+        outfile.writelines(all_file_lines)
 
     # return true for lines deleted
     return True
@@ -639,7 +646,7 @@ if __name__ == "__main__":
     ekbMod.clear_scren()
     try:
 
-        op = 3
+        op = 7
         a = ""
         match op:
 
@@ -676,7 +683,7 @@ if __name__ == "__main__":
                 dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
                 a = fsql_update_line("vendedor", "id", 2, dictUpdate)
             case 7:  # -- Delete Example (one or many)
-                a = fsql_delete_line("vendedor", "sells", 999)
+                a = fsql_delete_line("client", "id", 5)
             case _:  # case default
                 a = "No valid option entered"
 

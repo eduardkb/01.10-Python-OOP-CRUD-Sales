@@ -253,5 +253,5 @@ if __name__ == "__main__":
     fTest_read_all(objTest_Class)
     fTest_print_all_objects(objTest_Class)
     # fTest_update_one(objTest_Class, 2)
-    fTest_delete_one(objTest_Class, 6)
+    fTest_delete_one(objTest_Class, 2)
     fTest_print_all_objects(objTest_Class)
