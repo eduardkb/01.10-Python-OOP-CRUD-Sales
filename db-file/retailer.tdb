@@ -3,12 +3,6 @@ id,cpf,name,manager,salary,active
 2,229,Julia,Marco,3600,True
 3,339,Otavio,Luiza,1500,False
 4,449,Zuleima,Marco,2100,True
-5,,Nóia,Pó,,False
-6,,Nóia,Pó,,False
-7,,Nóia,Pó,,False
-12,,Nóia,Pó,,False
-16,,Nóia,Pó,,False
-17,,Nóia,Pó,,False
 1,119,Victor,Luiza,1500,True
 2,229,Julia,Marco,3600,True
 3,339,Otavio,Luiza,1500,False
@@ -16,3 +10,7 @@ id,cpf,name,manager,salary,active
 18,888,aaaa,aaaa,1234,True
 19,888,aaaa,aaaa,1234,True
 20,888,aaaa,aaaa,1234,True
+21,1,6,Lanterna,12.49,True
+22,2,7,Celular,850,True
+22,3,8,Laptop,2500.99,False
+23,4,9,Livro,35.15,True
