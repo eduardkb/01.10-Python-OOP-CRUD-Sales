@@ -1,7 +1,10 @@
 id,id_retailer,id_client,item_sold,price
-3,2,7,Celular,850
-22,3,8,Laptop,2500.99
-23,2,2,Tv,111
-25,2,7,Celular,850
-44,3,8,Laptop,2500.99
-45,4,9,Livro,35.15
+1,1,1,iPad,512.49
+2,2,2,Relógio,899
+3,3,3,Lego,2500.99
+4,4,4,Tenis,256
+5,5,5,Sapato,450
+6,15,6,Ps4,4500
+7,6,15,Celular,850
+8,7,7,Laptop,2500.99
+9,8,8,Óculos,82

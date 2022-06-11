@@ -7,7 +7,6 @@ Not Urgent:
         so that DB handles ID generation
 """
 
-from tkinter.messagebox import NO
 import database
 import ekbMod
 
@@ -106,6 +105,8 @@ class Client():
         if len(Client.all_items) == 0:
             Client.fRead_all_from_db()
 
+        if len(Client.all_items) == 0:
+            return 1
         # define next id
         id_max = int(1)
         for obj in Client.all_items:
@@ -206,6 +207,9 @@ class Retailer():
         if len(Retailer.all_items) == 0:
             Retailer.fRead_all_from_db()
 
+        if len(Retailer.all_items) == 0:
+            return 1
+
         # define next id
         id_max = int(1)
         for obj in Retailer.all_items:
@@ -228,6 +232,24 @@ class Sale():
         self.client = '-'
         self.item_sold = item_sold
         self.price = price
+
+        # try to get objects from classes if none on all_items
+        if len(Client.all_items) == 0:
+            Client.fRead_all_from_db()
+        if len(Retailer.all_items) == 0:
+            Retailer.fRead_all_from_db()
+
+        # locating and updating Client ID
+        objCli = next(
+            (x for x in Client.all_items if str(x.id) == str(self.id_client)), None)
+        if objCli != None:
+            self.client = objCli.name
+
+        # locating and updating Client ID
+        objRet = next(
+            (x for x in Retailer.all_items if str(x.id) == str(self.id_retailer)), None)
+        if objRet != None:
+            self.retailer = objRet.name
 
         if not source_db:
             # get next id to write on DB if 0 or less was passed as ID
@@ -254,8 +276,15 @@ class Sale():
 
     @staticmethod
     def fRead_all_from_db():
+        Client.all_items = []
+        Retailer.all_items = []
         Sale.all_items = []
+
+        # read all items from all classes
+        Client.fRead_all_from_db()
+        Retailer.fRead_all_from_db()
         items = database.fSql_read_all(Sale.db_table_name)
+
         for item in items:
             Sale(item[0], item[1], item[2],
                  item[3], item[4], True)
@@ -306,6 +335,8 @@ class Sale():
         if len(Sale.all_items) == 0:
             Sale.fRead_all_from_db()
 
+        if len(Sale.all_items) == 0:
+            return 1
         # define next id
         id_max = int(1)
         for obj in Sale.all_items:
@@ -315,6 +346,7 @@ class Sale():
 
 
 if __name__ == "__main__":
+    # for backend testing purposes
     def fTest_print_all_objects(objTest_Class):
         print("--------------------------------------")
         print(f"{objTest_Class} Table:")
@@ -336,27 +368,42 @@ if __name__ == "__main__":
 
     def fTest_add(objTest_Class):
         if objTest_Class == "Client":
-            Client(1, "111", "Eduard", "Croacia",
+            Client(0, "111", "Eduard", "Croacia",
                    "Semelci", 9977, "17/01/1983")
-            Client(2, "222", "Laysa", "USA",
+            Client(0, "222", "Laysa", "USA",
                    "Miami", 8080, "29/12/1990")
-            Client(3, "333", "Gabri", "Brasil",
+            Client(0, "333", "Gabri", "Brasil",
                    "Ponta Grossa", 8989, "14/12/1987")
-            Client(4, "444", "Siby", "Brasil",
+            Client(0, "444", "Siby", "Brasil",
                    "Guarapuava", 9797, "29/05/1986")
-            Client(5, "555", "Helena", "Alemanha",
+            Client(0, "555", "Helena", "Alemanha",
                    "Munich", 8880, "24/10/1959")
-            Client(6, "666", "Mateus", "Japao", "Tokio", 7878, "31/12/1985")
+            Client(0, "666", "Myrella", "Japao", "Tokio", 5578, "11/12/2014")
+            Client(0, "777", "Lavinia", "China", "Najin", 4455, "02/5/2016")
+            Client(0, "888", "Ro", "Nepal", "Iokio", 6665, "12/11/1965")
+            Client(0, "999", "Alice", "Italia", "Roma", 5544, "28/9/2018")
+            Client(0, "101", "Tali", "Canada", "Moncton", 4455, "13/6/1988")
+            Client(0, "102", "Angelo", "México", "Halao", 8855, "11/4/1985")
+            Client(0, "103", "Stefan", "Peru", "Quito", 2546, "12/5/1955")
         elif objTest_Class == "Retailer":
-            Retailer(1, "119", "Victor", "Luiza", 1500, True)
-            Retailer(2, "229", "Julia", "Marco", 3600, True)
-            Retailer(3, "339", "Otavio", "Luiza", 1500, False)
-            Retailer(0, "888", "aaaa", "aaaa", 1234, True)
+            Retailer(0, "119", "Victor", "Tiago", 1500, True)
+            Retailer(0, "229", "Julia", "Tiago", 3600, True)
+            Retailer(0, "339", "Otavio", "Ricardo", 1500, False)
+            Retailer(0, "332", "Paulo", "Tiago", 1234, True)
+            Retailer(0, "221", "Zuleima", "Ricardo", 1234, True)
+            Retailer(0, "345", "Xanti", "Tiago", 1234, True)
+            Retailer(0, "567", "Welington", "Ricardo", 3400, True)
+            Retailer(0, "456", "Udo", "Ricardo", 2800, True)
         elif objTest_Class == "Sale":
-            Sale(0, "1", 6, "Lanterna", 12.49)
-            Sale(0, "2", 7, "Celular", 850)
-            Sale(0, "3", 8, "Laptop", 2500.99)
-            Sale(0, "4", 9, "Livro", 35.15)
+            Sale(0, 1, 1, "iPad", 512.49)
+            Sale(0, 2, 2, "Relógio", 899)
+            Sale(0, 3, 3, "Lego", 2500.99)
+            Sale(0, 4, 4, "Tenis", 256)
+            Sale(0, 5, 5, "Sapato", 450)
+            Sale(0, 15, 6, "Ps4", 4500)
+            Sale(0, 6, 15, "Celular", 850)
+            Sale(0, 7, 7, "Laptop", 2500.99)
+            Sale(0, 8, 8, "Óculos", 82)
 
     def fTest_read_all(objTest_Class):
         if objTest_Class == "Client":
@@ -395,13 +442,13 @@ if __name__ == "__main__":
     objTest_Class = "Retailer"
     objTest_Class = "Sale"
 
-    # fTest_create_table(objTest_Class)
+    fTest_create_table(objTest_Class)
     # fTest_add(objTest_Class)
 
     fTest_read_all(objTest_Class)
 
-    fTest_print_all_objects(objTest_Class)
+    # fTest_print_all_objects(objTest_Class)
     # fTest_update_one(objTest_Class, 49)
-    fTest_delete_one(objTest_Class, 46)
+    # fTest_delete_one(objTest_Class, 46)
 
     fTest_print_all_objects(objTest_Class)

@@ -1,15 +1,13 @@
 id,cpf,name,country,city,phone,date_nasc
 1,111,Eduard,Croacia,Semelci,9977,17/01/1983
+2,222,Laysa,USA,Miami,8080,29/12/1990
 3,333,Gabri,Brasil,Ponta Grossa,8989,14/12/1987
 4,444,Siby,Brasil,Guarapuava,9797,29/05/1986
 5,555,Helena,Alemanha,Munich,8880,24/10/1959
-6,666,Mateus,Japao,Tokio,7878,31/12/1985
-7,111,Eduard,Croacia,Semelci,9977,17/01/1983
-8,222,Laysa,USA,Miami,8080,29/12/1990
-9,333,Gabri,Brasil,Ponta Grossa,8989,14/12/1987
-10,444,Siby,Brasil,Guarapuava,9797,29/05/1986
-5,555,Helena,Alemanha,Munich,8880,24/10/1959
-6,666,Mateus,Japao,Tokio,7878,31/12/1985
-11,777,bbbb,bbbb,bbbb,7878,31/12/1985
-12,777,bbbb,bbbb,bbbb,7878,31/12/1985
-13,777,bbbb,bbbb,bbbb,7878,31/12/1985
+6,666,Myrella,Japao,Tokio,5578,11/12/2014
+7,777,Lavinia,China,Najin,4455,02/5/2016
+8,888,Ro,Nepal,Iokio,6665,12/11/1965
+9,999,Alice,Italia,Roma,5544,28/9/2018
+10,101,Tali,Canada,Moncton,4455,13/6/1988
+11,102,Angelo,México,Halao,8855,11/4/1985
+12,103,Stefan,Peru,Quito,2546,12/5/1955
