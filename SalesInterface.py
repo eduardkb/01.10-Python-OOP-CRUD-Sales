@@ -5,6 +5,7 @@ TODO TODO
 -- try reading ini file from ekbMod AND USE IN BOTH database.py and SalesInterface.py
 -- when printing list format float value
 """
+from turtle import back
 import ekbMod
 import backend
 from tabulate import tabulate
@@ -93,12 +94,13 @@ def fEnter_client():
         match op:
             case '1':
                 fTable_print_items(backend.Client.all_items, "Clients")
+                input("\nPress any key to return.")
             case '2':
                 pass
             case '3':
                 pass
             case '4':
-                pass
+                fDelete_Item("Clients")
 
 
 def fEnter_Retailer():
@@ -126,12 +128,13 @@ def fEnter_Retailer():
         match op:
             case '1':
                 fTable_print_items(backend.Retailer.all_items, "Retailers")
+                input("\nPress any key to return.")
             case '2':
                 pass
             case '3':
                 pass
             case '4':
-                pass
+                fDelete_Item("Retailers")
 
 
 def fEnter_Sells():
@@ -157,11 +160,8 @@ def fEnter_Sells():
         match op:
             case '1':
                 fTable_print_items(backend.Sale.all_items, "Sells")
+                input("\nPress any key to return.")
             case '2':
-                pass
-            case '3':
-                pass
-            case '4':
                 pass
 
 
@@ -210,7 +210,29 @@ def fTable_print_items(items, table):
         for tup in items:
             print(row(id=tup.id, ret=tup.retailer, cli=tup.client, item=tup.item_sold,
                   price=tup.price))
-    input("\nPress any key to return.")
+
+
+def fDelete_Item(table):
+    if table == "Clients":
+        fTable_print_items(backend.Client.all_items, "Clients")
+        id = input("\nSelect a Client ID to delete: ")
+        try:
+            backend.Client.fDelete_line(id)
+            print("\nINFO: Client deleted successfully.")
+            input("Press any key to continue")
+        except Exception as e:
+            print("ERROR: Unable to delete Client: ", e)
+            input("Press any key to continue")
+    if table == "Retailers":
+        fTable_print_items(backend.Retailer.all_items, "Retailers")
+        id = input("\nSelect a Retailer ID to delete: ")
+        try:
+            backend.Retailer.fDelete_line(id)
+            print("\nINFO: Client deleted successfully.")
+            input("Press any key to continue")
+        except Exception as e:
+            print("ERROR: Unable to delete Retailer: ", e)
+            input("Press any key to continue")
 
 
 def start_CLI():
