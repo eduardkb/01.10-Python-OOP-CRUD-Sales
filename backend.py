@@ -1,10 +1,10 @@
 """
 TODO TODO
 Urgent
---  Class Sale: test update and delete
+--  
 Not Urgent:
--- class demands id to be be passed. Implement option to not pass ID 
-        so that DB handles ID generation
+-- 
+   
 """
 
 import database
@@ -439,16 +439,21 @@ if __name__ == "__main__":
 
     ekbMod.clear_scren()
     objTest_Class = "Client"
-    objTest_Class = "Retailer"
-    objTest_Class = "Sale"
-
     fTest_create_table(objTest_Class)
-    # fTest_add(objTest_Class)
-
+    fTest_add(objTest_Class)
     fTest_read_all(objTest_Class)
+    fTest_print_all_objects(objTest_Class)
+    objTest_Class = "Retailer"
+    fTest_create_table(objTest_Class)
+    fTest_add(objTest_Class)
+    fTest_read_all(objTest_Class)
+    fTest_print_all_objects(objTest_Class)
+    objTest_Class = "Sale"
+    fTest_create_table(objTest_Class)
+    fTest_add(objTest_Class)
+    fTest_read_all(objTest_Class)
+    fTest_print_all_objects(objTest_Class)
 
-    # fTest_print_all_objects(objTest_Class)
     # fTest_update_one(objTest_Class, 49)
     # fTest_delete_one(objTest_Class, 46)
-
-    fTest_print_all_objects(objTest_Class)
+    # fTest_print_all_objects(objTest_Class)

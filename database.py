@@ -3,7 +3,7 @@ TODO TODO
 Urgent
 --
 Not Urgent:
--- file -- verify encoding (acentuaçao nao grava e nao lê)
+-- file -- (acentuaçao nao grava e nao lê) (Encodeng utf-8 ???)
 """
 
 import ekbMod
