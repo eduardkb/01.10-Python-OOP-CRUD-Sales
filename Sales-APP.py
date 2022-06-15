@@ -1,17 +1,20 @@
 """
 TODO TODO
--- change app files to /module/ folder
 -- read ini file and decide between gui and cli
 -- try reading ini file from ekbMod AND USE IN BOTH database.py and SalesInterface.py
 -- when printing list format float value
+-- when deleting, give a way to cancel. cancel Update and add as well?
+-- display table - if no lines, write message no lines found
 """
-from turtle import back
-import ekbMod
-import backend
-from tabulate import tabulate
+
+from base64 import decodebytes
+import resources.backend as backend
+import resources.ekbMod as ekbMod
+bDEBUG = True
+
 
 ######################################################
-# Print Main menu
+# CLI - Print Main menu
 
 
 def fMain_menu():
@@ -52,7 +55,7 @@ def fPrint_main_Menu():
     print("╚═════════════════════════════════════════════════════════════════════════════╝")
 
 ######################################################
-# Print Main menu
+# CLI - Print SubMenu title
 
 
 def fPrint_submenu_title(title: str):
@@ -64,9 +67,6 @@ def fPrint_submenu_title(title: str):
     print(f"┕{table}┙")
     print("┄"*80)
 
-
-######################################################
-# Sub Menus
 
 def fEnter_client():
 
@@ -169,11 +169,21 @@ def fEnter_Sells():
 # General Functions
 
 def fCreate_database():
+    global bDEBUG
     fPrint_submenu_title("Create Databases")
     try:
         backend.Client.fCreate_table()
         backend.Retailer.fCreate_table()
         backend.Sale.fCreate_table()
+
+        if bDEBUG:
+            objTest_Class = "Client"
+            backend.fTest_add(objTest_Class)
+            objTest_Class = "Retailer"
+            backend.fTest_add(objTest_Class)
+            objTest_Class = "Sale"
+            backend.fTest_add(objTest_Class)
+
         print("INFO: All databses created successful if they did not exist.")
     except Exception as e:
         print("ERROR: Database couldn't be created: ", e)

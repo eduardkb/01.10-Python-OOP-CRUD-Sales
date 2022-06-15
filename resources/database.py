@@ -5,16 +5,15 @@ Urgent
 Not Urgent:
 -- file -- (acentuaçao nao grava e nao lê) (Encodeng utf-8 ???)
 """
-
-import ekbMod
+import resources.ekbMod as ekbMod
 import os
 import sqlite3
 
 iniSettings = {
     "updated_from_file": False,
     "ini_file_exists": True,
-    "database": "File",
-    "filedb_path": ".\\FileDB\\",
+    "database": "file",
+    "filedb_path": ".\\resources\\FileDB\\",
     "filedb_extension": "tdb",
 }
 
@@ -33,7 +32,7 @@ def fSql_create_Table(table_name, headers):
         result = fSQLite_create_table(table_name, headers)
         return result
 
-    raise Exception("No database to read from")
+    raise Exception("Database parameters incorrect")
 
 
 def fSql_add(table_name, newValues):
@@ -610,11 +609,11 @@ def fUpdate_INI_Settings():
     #       "filedb_path": ".\\FileDB\\",
     #       "filedb_extension": "tdb",
 
-    if (not iniSettings["ini_file_exists"]) or (not ekbMod.verify_if_file_exists("settings.ini")):
+    if (not iniSettings["ini_file_exists"]) or (not ekbMod.verify_if_file_exists(r"resources\settings.ini")):
         iniSettings["ini_file_exists"] = False
         return
 
-    with open("settings.ini", 'r') as file:
+    with open("resources\settings.ini", 'r') as file:
         list_lines = file.readlines()
 
     for line in list_lines:
