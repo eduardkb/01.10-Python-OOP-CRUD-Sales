@@ -1,10 +1,11 @@
 """
 TODO TODO
 -- read ini file and decide between gui and cli
--- try reading ini file from ekbMod AND USE IN BOTH database.py and SalesInterface.py
+    -- try reading ini file from ekbMod AND USE IN BOTH database.py and SalesInterface.py
+-- give option to cancel Update and add as well
+not urgent
 -- when printing list format float value
--- when deleting, give a way to cancel. cancel Update and add as well?
--- display table - if no lines, write message no lines found
+
 """
 
 from base64 import decodebytes
@@ -164,9 +165,9 @@ def fEnter_Sells():
             case '2':
                 pass
 
-
 ######################################################
 # General Functions
+
 
 def fCreate_database():
     global bDEBUG
@@ -194,55 +195,87 @@ def fCreate_database():
 def fTable_print_items(items, table):
     fPrint_submenu_title(f"List of {table}")
     if table == "Clients":
-        head = ["ID", "CPF", "Name", "Country", "City", "Phone", "Birthday"]
-        row = "{id:<4}| {CPF:<10}| {Name:<15}| {Country:<15}| {City:<15}| {Phone:<10}| {Birthday:^10}".format
-        print(row(id=head[0], CPF=head[1], Name=head[2], Country=head[3],
-              City=head[4], Phone=head[5], Birthday=head[6]))
-        print("-"*80)
-        for tup in items:
-            print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Country=tup.country,
-                  City=tup.city, Phone=tup.phone, Birthday=tup.date_nasc))
+        if len(items) > 0:
+            head = ["ID", "CPF", "Name", "Country",
+                    "City", "Phone", "Birthday"]
+            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Country:<15}| {City:<15}| {Phone:<10}| {Birthday:^10}".format
+            print(row(id=head[0], CPF=head[1], Name=head[2], Country=head[3],
+                      City=head[4], Phone=head[5], Birthday=head[6]))
+            print("-"*80)
+            for tup in items:
+                print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Country=tup.country,
+                          City=tup.city, Phone=tup.phone, Birthday=tup.date_nasc))
+        else:
+            print(f"INFO: {table} table is empty.")
     elif table == "Retailers":
-        head = ["ID", "CPF", "Name", "Manager", "Salary"]
-        row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:<10}".format
-        print(row(id=head[0], CPF=head[1], Name=head[2], Manager=head[3],
-              Salary=head[4]))
-        print("-"*80)
-        for tup in items:
-            print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Manager=tup.manager,
-                  Salary=tup.salary))
+        if len(items) > 0:
+            head = ["ID", "CPF", "Name", "Manager", "Salary"]
+            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:<10}".format
+            print(row(id=head[0], CPF=head[1], Name=head[2], Manager=head[3],
+                      Salary=head[4]))
+            print("-"*80)
+            for tup in items:
+                print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Manager=tup.manager,
+                          Salary=tup.salary))
+        else:
+            fPrint_submenu_title(f"List of {table}")
+            print(f"INFO: {table} table is empty.")
     elif table == "Sells":
-        head = ["ID", "Retailer", "Client", "Item Sold", "Price"]
-        row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:<10}".format
-        print(row(id=head[0], ret=head[1], cli=head[2], item=head[3],
-              price=head[4]))
-        print("-"*80)
-        for tup in items:
-            print(row(id=tup.id, ret=tup.retailer, cli=tup.client, item=tup.item_sold,
-                  price=tup.price))
+        if len(items) > 0:
+            head = ["ID", "Retailer", "Client", "Item Sold", "Price"]
+            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:<10}".format
+            print(row(id=head[0], ret=head[1], cli=head[2], item=head[3],
+                      price=head[4]))
+            print("-"*80)
+            for tup in items:
+                print(row(id=tup.id, ret=tup.retailer, cli=tup.client, item=tup.item_sold,
+                          price=tup.price))
+        else:
+            fPrint_submenu_title(f"List of {table}")
+            print(f"INFO: {table} table is empty.")
 
 
 def fDelete_Item(table):
     if table == "Clients":
-        fTable_print_items(backend.Client.all_items, "Clients")
-        id = input("\nSelect a Client ID to delete: ")
-        try:
-            backend.Client.fDelete_line(id)
-            print("\nINFO: Client deleted successfully.")
-            input("Press any key to continue")
-        except Exception as e:
-            print("ERROR: Unable to delete Client: ", e)
-            input("Press any key to continue")
+        if len(backend.Client.all_items) > 0:
+            fTable_print_items(backend.Client.all_items, "Clients")
+            id = input(
+                f"\nSelect a {table} ID to delete (Enter or 0 to cancel): ")
+            if id == "0" or id == "":
+                print("\nINFO: Delete operation cancelled.")
+                input("Press any key to continue")
+            else:
+                try:
+                    backend.Client.fDelete_line(id)
+                    print("\nINFO: Client deleted successfully.")
+                    input("Press any key to continue")
+                except Exception as e:
+                    print("ERROR: Unable to delete Client: ", e)
+                    input("Press any key to continue")
+        else:
+            fPrint_submenu_title(f"List of {table}")
+            print(f"INFO: {table} table has no items. Nothing to delete.")
+            input("\nPress any key to continue")
     if table == "Retailers":
-        fTable_print_items(backend.Retailer.all_items, "Retailers")
-        id = input("\nSelect a Retailer ID to delete: ")
-        try:
-            backend.Retailer.fDelete_line(id)
-            print("\nINFO: Client deleted successfully.")
-            input("Press any key to continue")
-        except Exception as e:
-            print("ERROR: Unable to delete Retailer: ", e)
-            input("Press any key to continue")
+        if len(backend.Retailer.all_items) > 0:
+            fTable_print_items(backend.Retailer.all_items, "Retailers")
+            id = input(
+                f"\nSelect a {table} ID to delete (Enter or 0 to cancel): ")
+            if id == "0" or id == "":
+                print("\nINFO: Delete operation cancelled.")
+                input("Press any key to continue")
+            else:
+                try:
+                    backend.Retailer.fDelete_line(id)
+                    print("\nINFO: Client deleted successfully.")
+                    input("Press any key to continue")
+                except Exception as e:
+                    print("ERROR: Unable to delete Retailer: ", e)
+                    input("Press any key to continue")
+        else:
+            fPrint_submenu_title(f"List of {table}")
+            print(f"INFO: {table} table has no items. Nothing to delete.")
+            input("\nPress any key to continue")
 
 
 def start_CLI():
