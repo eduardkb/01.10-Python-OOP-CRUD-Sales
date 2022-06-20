@@ -8,7 +8,6 @@ not urgent
 
 """
 
-from base64 import decodebytes
 import resources.backend as backend
 import resources.ekbMod as ekbMod
 bDEBUG = True
@@ -283,4 +282,5 @@ def start_CLI():
 
 
 if __name__ == "__main__":
+    ekbMod.fUpdate_INI_Settings()
     start_CLI()

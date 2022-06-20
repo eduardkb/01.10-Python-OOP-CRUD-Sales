@@ -9,26 +9,17 @@ import resources.ekbMod as ekbMod
 import os
 import sqlite3
 
-iniSettings = {
-    "updated_from_file": False,
-    "ini_file_exists": True,
-    "database": "file",
-    "filedb_path": ".\\resources\\FileDB\\",
-    "filedb_extension": "tdb",
-}
-
 ###################################################################
 # SQL ENTRY FUNCTIONS
 
 
 def fSql_create_Table(table_name, headers):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_create_table(table_name, headers)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_create_table(table_name, headers)
         return result
 
@@ -36,13 +27,12 @@ def fSql_create_Table(table_name, headers):
 
 
 def fSql_add(table_name, newValues):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_add(table_name, newValues)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_add(table_name, newValues)
         return result
 
@@ -50,13 +40,12 @@ def fSql_add(table_name, newValues):
 
 
 def fSql_read_all(table_name):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_read_all(table_name)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_read_all(table_name)
         return result
 
@@ -64,13 +53,12 @@ def fSql_read_all(table_name):
 
 
 def fsql_read_one(table_name, table_column, searchValue):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_read_one(table_name, table_column, searchValue)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_read_one(table_name, table_column, searchValue)
         return result
 
@@ -78,14 +66,13 @@ def fsql_read_one(table_name, table_column, searchValue):
 
 
 def fsql_update_line(table_name, table_column, searchValue, newValues):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_update_line(
             table_name, table_column, searchValue, newValues)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_update_line(
             table_name, table_column, searchValue, newValues)
         return result
@@ -94,13 +81,12 @@ def fsql_update_line(table_name, table_column, searchValue, newValues):
 
 
 def fsql_delete_line(table_name, table_column, searchValue):
-    global iniSettings
-    fUpdate_INI_Settings()
+    ekbMod.fUpdate_INI_Settings()
 
-    if iniSettings["database"] == "file":
+    if ekbMod.iniSettings["database"] == "file":
         result = fFile_delete_line(table_name, table_column, searchValue)
         return result
-    if iniSettings["database"] == "sqlite":
+    if ekbMod.iniSettings["database"] == "sqlite":
         result = fSQLite_delete_line(table_name, table_column, searchValue)
         return result
 
@@ -121,17 +107,16 @@ def fSQLit_create_conenction(table_name, fileName):
 
 
 def fSQLite_create_table(table_name: str, headers):
-    global iniSettings
 
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     bExists = ekbMod.verify_if_file_exists(db_file)
     if not bExists:
-        if not os.path.exists(iniSettings["sqlite_path"]):
-            os.makedirs(iniSettings["sqlite_path"])
+        if not os.path.exists(ekbMod.iniSettings["sqlite_path"]):
+            os.makedirs(ekbMod.iniSettings["sqlite_path"])
 
     conn = fSQLit_create_conenction(table_name, db_file)
 
@@ -163,11 +148,9 @@ def fSQLite_create_table(table_name: str, headers):
 
 
 def fSQLite_add(table_name, newValues):
-    global iniSettings
-
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     conn = fSQLit_create_conenction(table_name, db_file)
@@ -208,11 +191,9 @@ def fSQLite_add(table_name, newValues):
 
 
 def fSQLite_read_all(table_name):
-    global iniSettings
-
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     conn = fSQLit_create_conenction(table_name, db_file)
@@ -236,11 +217,9 @@ def fSQLite_read_all(table_name):
 
 
 def fSQLite_read_one(table_name, table_column, searchValue):
-    global iniSettings
-
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     conn = fSQLit_create_conenction(table_name, db_file)
@@ -265,11 +244,10 @@ def fSQLite_read_one(table_name, table_column, searchValue):
 
 def fSQLite_update_line(
         table_name, table_column, searchValue, newValues):
-    global iniSettings
 
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     conn = fSQLit_create_conenction(table_name, db_file)
@@ -303,11 +281,9 @@ def fSQLite_update_line(
 
 
 def fSQLite_delete_line(table_name, table_column, searchValue):
-    global iniSettings
-
-    db_path = iniSettings["sqlite_path"]
-    db_name = iniSettings["sqlite_db_name"]
-    db_exten = iniSettings["sqlite_db_extension"]
+    db_path = ekbMod.iniSettings["sqlite_path"]
+    db_name = ekbMod.iniSettings["sqlite_db_name"]
+    db_exten = ekbMod.iniSettings["sqlite_db_extension"]
     db_file = str(db_path + db_name + db_exten)
 
     conn = fSQLit_create_conenction(table_name, db_file)
@@ -341,13 +317,13 @@ def fFile_create_table(table_name: str, headers):
     headers = [(x.split(":")[0]).lower() for x in headers]
 
     # get file name
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if bExists:
         return True
     else:
-        if not os.path.exists(iniSettings["filedb_path"]):
-            os.makedirs(iniSettings["filedb_path"])
+        if not os.path.exists(ekbMod.iniSettings["filedb_path"]):
+            os.makedirs(ekbMod.iniSettings["filedb_path"])
 
     # generate header string
     sHeader = ""
@@ -363,7 +339,7 @@ def fFile_create_table(table_name: str, headers):
 
 
 def fFile_add(table_name, newValues):
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -425,7 +401,7 @@ def fFile_add(table_name, newValues):
 def fFile_read_all(table_name):
 
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -448,7 +424,7 @@ def fFile_read_all(table_name):
 
 def fFile_read_one(table_name, table_column: str, searchValue: str):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -475,7 +451,7 @@ def fFile_read_one(table_name, table_column: str, searchValue: str):
 
 def fFile_update_line(table_name, table_column: str, searchValue: str, newValues):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -550,7 +526,7 @@ def fFile_update_line(table_name, table_column: str, searchValue: str, newValues
 
 def fFile_delete_line(table_name, table_column: str, searchValue: str):
     # verify if table_name (file) exists
-    sFileName = f'{iniSettings["filedb_path"]}{table_name}.{iniSettings["filedb_extension"]}'
+    sFileName = f'{ekbMod.iniSettings["filedb_path"]}{table_name}.{ekbMod.iniSettings["filedb_extension"]}'
     bExists = ekbMod.verify_if_file_exists(sFileName)
     if not bExists:
         raise FileNotFoundError("SQL-02, Table name not found.")
@@ -598,33 +574,6 @@ def fFile_delete_line(table_name, table_column: str, searchValue: str):
 
 ###################################################################
 # GENERAL FUNCTIONS
-
-
-def fUpdate_INI_Settings():
-    global iniSettings
-    # default INI settings:
-    #       "updated_from_file": False,
-    #       "ini_file_exists": True,
-    #       "database": "File",
-    #       "filedb_path": ".\\FileDB\\",
-    #       "filedb_extension": "tdb",
-
-    if (not iniSettings["ini_file_exists"]) or (not ekbMod.verify_if_file_exists(r"resources\settings.ini")):
-        iniSettings["ini_file_exists"] = False
-        return
-
-    with open("resources\settings.ini", 'r') as file:
-        list_lines = file.readlines()
-
-    for line in list_lines:
-        line = line.strip()
-        if line != '' and line[0] != '#':
-            values = line.split("=")
-            if len(values) > 1:
-                iniSettings[(values[0].strip()).lower()] = (
-                    values[1].strip()).lower()
-
-    iniSettings["updated_from_file"] = True
 
 
 def fFile_Search_column(columns, searchValue):
