@@ -40,6 +40,43 @@ class Client():
         sPrint = f"{self.__class__.__name__} | {self.id}, {self.cpf}, {self.name}, {self.country}, {self.city}, {self.phone}, {self.date_nasc}\n"
         return sPrint
 
+    def fValidateInput():
+        # Init fields: id, cpf, name, country, city, phone, date_nasc
+        val = []
+        sCpf = ''
+        while sCpf == '' or len(sCpf) <= 5:
+            sCpf = input("Client CPF: ")
+            if sCpf == '0':
+                return 0
+            if sCpf == '' or len(sCpf) <= 5:
+                print("INFO: Incorrect input. CPF has at least 6 digits.")
+        val.append(sCpf)
+        sName = ''
+        while sName == '' or len(sName) <= 5:
+            sName = input("Client Name: ")
+            if sName == '0':
+                return 0
+            if sName == '' or len(sName) <= 5:
+                print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
+        val.append(sName)
+        sCountry = input("Client Country: ")
+        if sCountry == '0':
+            return 0
+        val.append(sCountry)
+        sCity = input("Client City: ")
+        if sCity == '0':
+            return 0
+        val.append(sCity)
+        sPhone = input("Client Phone: ")
+        if sPhone == '0':
+            return 0
+        val.append(sPhone)
+        sDate_nasc = input("Client Birthday: ")
+        if sDate_nasc == '0':
+            return 0
+        val.append(sDate_nasc)
+        return val
+
     def fwrite_to_db(self):
         newValues = {"id": self.id, "cpf": self.cpf, "name": self.name, "country": self.country,
                      "city": self.city, "phone": self.phone, "date_nasc": self.date_nasc}

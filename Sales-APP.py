@@ -1,13 +1,11 @@
 """
 TODO TODO
--- read ini file and decide between gui and cli
-    -- try reading ini file from ekbMod AND USE IN BOTH database.py and SalesInterface.py
 -- give option to cancel Update and add as well
+-- validate some filelds with the class while adding
 not urgent
 -- when printing list format float value
 
 """
-
 import resources.backend as backend
 import resources.ekbMod as ekbMod
 bDEBUG = True
@@ -96,7 +94,8 @@ def fEnter_client():
                 fTable_print_items(backend.Client.all_items, "Clients")
                 input("\nPress any key to return.")
             case '2':
-                pass
+                fAdd_new("Clients")
+                input("Press any key to return.")
             case '3':
                 pass
             case '4':
@@ -130,7 +129,8 @@ def fEnter_Retailer():
                 fTable_print_items(backend.Retailer.all_items, "Retailers")
                 input("\nPress any key to return.")
             case '2':
-                pass
+                fAdd_new("Retailers")
+                input("Press any key to return.")
             case '3':
                 pass
             case '4':
@@ -162,7 +162,8 @@ def fEnter_Sells():
                 fTable_print_items(backend.Sale.all_items, "Sells")
                 input("\nPress any key to return.")
             case '2':
-                pass
+                fAdd_new("Sells")
+                input("Press any key to return.")
 
 ######################################################
 # General Functions
@@ -232,6 +233,27 @@ def fTable_print_items(items, table):
         else:
             fPrint_submenu_title(f"List of {table}")
             print(f"INFO: {table} table is empty.")
+
+
+def fAdd_new(table):
+    fPrint_submenu_title(f"Adding {table}")
+    print("Type a value for each field (0 at any field to cancel):")
+
+    if table == "Clients":
+        val = backend.Client.fValidateInput()
+        if val == 0:
+            print("\nINFO: Adding client was cancelled.")
+        else:
+            try:
+                backend.Client(0, val[0], val[1], val[2],
+                               val[3], val[4], val[5])
+                print("\nINFO: Successfully added new Client")
+            except Exception as e:
+                print(f"\nERROR: Could not add new Client: {e}")
+    if table == "Retailers":
+        pass
+    if table == "Sells":
+        pass
 
 
 def fDelete_Item(table):

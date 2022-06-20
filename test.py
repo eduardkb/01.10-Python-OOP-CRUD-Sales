@@ -1,7 +1,7 @@
 import os
-os.system("cls")
-ltest = list(range(1, 20))
-print(ltest)
+from unittest import load_tests
+from resources.ekbMod import clear_scren
+clear_scren()
 
 
 def ftransform(x):
@@ -11,12 +11,18 @@ def ftransform(x):
         return ''
 
 
+ltest = list(range(1, 20))
+print(f"original list: {ltest}")
 lCalc = list(map(ftransform, ltest))
-print(lCalc)
+print(f"transformed list: {lCalc}")
 
 # -------------------------
+print("---")
 
-map(lambda num: num ** 2, numbers)
+numbers = list(range(1, 20))
+print(f"original list: {numbers}")
+transNum = list(map(lambda num: num ** 2, numbers))
+print(f"transformed list: {transNum}")
 
 print("---")
 print("END")
