@@ -1,5 +1,6 @@
 """
 TODO TODO
+-- change match to if to be compatible with older versions
 -- give option to cancel Update and add as well
 -- validate some filelds with the class while adding
 not urgent
