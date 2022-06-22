@@ -6,6 +6,7 @@ not urgent
 -- when printing list format float value
 
 """
+
 import resources.backend as backend
 import resources.ekbMod as ekbMod
 bDEBUG = True
@@ -236,7 +237,7 @@ def fAdd_new(table):
     print("Type a value for each field (0 at any field to cancel):")
 
     if table == "Clients":
-        val = backend.Client.fValidateInput()
+        val = fValidateClientInput()
         if val == 0:
             print("\nINFO: Adding client was cancelled.")
         else:
@@ -247,9 +248,111 @@ def fAdd_new(table):
             except Exception as e:
                 print(f"\nERROR: Could not add new Client: {e}")
     if table == "Retailers":
-        pass
+        val = fValidateRetailerInput()
+        if val == 0:
+            print("\nINFO: Adding retailer was cancelled.")
+        else:
+            try:
+                backend.Retailer(0, val[0], val[1], val[2],
+                                 val[3], val[4])
+                print("\nINFO: Successfully added new Retailer")
+            except Exception as e:
+                print(f"\nERROR: Could not add new Retailer: {e}")
     if table == "Sells":
         pass
+
+
+def fValidateClientInput():
+    # Init fields: id, cpf, name, country, city, phone, date_nasc
+    val = []
+    sCpf = ''
+    while sCpf == '' or len(sCpf) <= 5:
+        sCpf = input("Client CPF: ")
+        if sCpf == '0':
+            return 0
+        if sCpf == '' or len(sCpf) <= 5:
+            print("INFO: Incorrect input. CPF has at least 6 digits.")
+    val.append(sCpf)
+    sName = ''
+    while sName == '' or len(sName) <= 5:
+        sName = input("Client Name: ")
+        if sName == '0':
+            return 0
+        if sName == '' or len(sName) <= 5:
+            print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
+    val.append(sName)
+    sCountry = input("Client Country: ")
+    if sCountry == '0':
+        return 0
+    val.append(sCountry)
+    sCity = input("Client City: ")
+    if sCity == '0':
+        return 0
+    val.append(sCity)
+    sPhone = input("Client Phone: ")
+    if sPhone == '0':
+        return 0
+    val.append(sPhone)
+    sDate_nasc = input("Client Birthday: ")
+    if sDate_nasc == '0':
+        return 0
+    val.append(sDate_nasc)
+    return val
+
+
+def fValidateRetailerInput():
+    # cpf, name, manager, salary, active
+    val = []
+    # validate CPF
+    sCpf = ''
+    while sCpf == '' or len(sCpf) <= 5:
+        sCpf = input("Retailer CPF: ")
+        if sCpf == '0':
+            return 0
+        if sCpf == '' or len(sCpf) <= 5:
+            print("INFO: Incorrect input. CPF has at least 6 digits.")
+    val.append(sCpf)
+    # validate name
+    sName = ''
+    while sName == '' or len(sName) <= 5:
+        sName = input("Retailer Name: ")
+        if sName == '0':
+            return 0
+        if sName == '' or len(sName) <= 5:
+            print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
+    val.append(sName)
+    # input manager
+    sManager = input("Retailer Manager: ")
+    if sManager == '0':
+        return 0
+    val.append(sManager)
+    # validate salary
+    fSalary = ''
+    while fSalary == '':
+        fSalary = input("Retailer Salary: ")
+        if fSalary == '0':
+            return 0
+        try:
+            fSalary = float(fSalary)
+            val.append(fSalary)
+        except Exception:
+            print('\nINFO: Please enter a number. Ex: 1200.50.')
+            fSalary = ''
+
+    # validate active
+    fActive = ''
+    while fActive not in ['y', 'yes', 'n', 'no', '0']:
+        fActive = input("Retailer Active (y/n): ")
+        if fActive == '0':
+            return 0
+        elif fActive in ['y', 'yes']:
+            val.append(True)
+        elif fActive in ['n', 'no']:
+            val.append(False)
+        else:
+            print("\nInfo: Invalid input. Please type 'y' or 'n'.")
+
+    return val
 
 
 def fDelete_Item(table):
