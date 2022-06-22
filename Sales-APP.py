@@ -1,6 +1,5 @@
 """
 TODO TODO
--- change match to if to be compatible with older versions
 -- give option to cancel Update and add as well
 -- validate some filelds with the class while adding
 not urgent
@@ -22,15 +21,14 @@ def fMain_menu():
         fPrint_main_Menu()
 
         op = input("Select an option: ")
-        match op:
-            case '1':
-                fCreate_database()
-            case '2':
-                fEnter_client()
-            case '3':
-                fEnter_Retailer()
-            case '4':
-                fEnter_Sells()
+        if op == '1':
+            fCreate_database()
+        elif op == '2':
+            fEnter_client()
+        elif op == '3':
+            fEnter_Retailer()
+        elif op == '4':
+            fEnter_Sells()
 
         if op not in ['1', '2', '3', '4', '5']:
             print("\nINFO: Invalid option.")
@@ -90,17 +88,16 @@ def fEnter_client():
             print("\nINFO: Invalid option.")
             input("Press any key to return.")
 
-        match op:
-            case '1':
-                fTable_print_items(backend.Client.all_items, "Clients")
-                input("\nPress any key to return.")
-            case '2':
-                fAdd_new("Clients")
-                input("Press any key to return.")
-            case '3':
-                pass
-            case '4':
-                fDelete_Item("Clients")
+        if op == '1':
+            fTable_print_items(backend.Client.all_items, "Clients")
+            input("\nPress any key to return.")
+        elif op == '2':
+            fAdd_new("Clients")
+            input("Press any key to return.")
+        elif op == '3':
+            pass
+        elif op == '4':
+            fDelete_Item("Clients")
 
 
 def fEnter_Retailer():
@@ -125,17 +122,16 @@ def fEnter_Retailer():
             print("\nINFO: Invalid option.")
             input("Press any key to return.")
 
-        match op:
-            case '1':
-                fTable_print_items(backend.Retailer.all_items, "Retailers")
-                input("\nPress any key to return.")
-            case '2':
-                fAdd_new("Retailers")
-                input("Press any key to return.")
-            case '3':
-                pass
-            case '4':
-                fDelete_Item("Retailers")
+        if op == '1':
+            fTable_print_items(backend.Retailer.all_items, "Retailers")
+            input("\nPress any key to return.")
+        elif op == '2':
+            fAdd_new("Retailers")
+            input("Press any key to return.")
+        elif op == '3':
+            pass
+        elif op == '4':
+            fDelete_Item("Retailers")
 
 
 def fEnter_Sells():
@@ -158,13 +154,12 @@ def fEnter_Sells():
             print("\nINFO: Invalid option.")
             input("Press any key to return.")
 
-        match op:
-            case '1':
-                fTable_print_items(backend.Sale.all_items, "Sells")
-                input("\nPress any key to return.")
-            case '2':
-                fAdd_new("Sells")
-                input("Press any key to return.")
+        if op == '1':
+            fTable_print_items(backend.Sale.all_items, "Sells")
+            input("\nPress any key to return.")
+        elif op == '2':
+            fAdd_new("Sells")
+            input("Press any key to return.")
 
 ######################################################
 # General Functions

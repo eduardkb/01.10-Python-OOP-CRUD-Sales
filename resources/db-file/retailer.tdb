@@ -5,12 +5,5 @@ id,cpf,name,manager,salary,active
 4,332,Paulo,Tiago,1234,True
 5,221,Zuleima,Ricardo,1234,True
 6,345,Xanti,Tiago,1234,True
+7,567,Welington,Ricardo,3400,True
 8,456,Udo,Ricardo,2800,True
-9,119,Victor,Tiago,1500,True
-10,229,Julia,Tiago,3600,True
-11,339,Otavio,Ricardo,1500,False
-12,332,Paulo,Tiago,1234,True
-13,221,Zuleima,Ricardo,1234,True
-14,345,Xanti,Tiago,1234,True
-15,567,Welington,Ricardo,3400,True
-16,456,Udo,Ricardo,2800,True

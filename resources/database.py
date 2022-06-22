@@ -596,44 +596,42 @@ if __name__ == "__main__":
 
         op = 7
         a = ""
-        match op:
-
-            case 1:  # -- CREATE DB and tables
-                aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
-                            "age:integer", "heigth:real", "address:text", "CPF:text"]
-                a = fSql_create_Table("cliente", aHeaders)
-                aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
-                            "salary:real", "sells:ïnteger"]
-                a = fSql_create_Table("vendedor", aHeaders)
-            case 2:  # -- ADD with all fields
-                dictAdd = {"ID": 4, "name": "Kelson",
-                           "age": 44, "heigth": 4.44, "address": "Avenida", "CPF": "444444"}
-                a = fSql_add("cliente", dictAdd)
-                dictAdd = {"ID": 4, "name": "Xena",
-                           "salary": 4400, "sells": 140}
-                a = fSql_add("vendedor", dictAdd)
-            case 3:  # -- ADD with some fields
-                dictAdd = {"name": "Basel", "country": "Brasil",
-                           "city": "Curitiba", "date_nasc": "10/06/2022"}
-                a = fSql_add("client", dictAdd)
-                dictAdd = {"name": "Nóia",
-                           "manager": "Pó", "active": "False"}
-                a = fSql_add("retailer", dictAdd)
-            case 4:  # -- Read One Example
-                a = fsql_read_one("Cliente", "id", 1)
-            case 5:  # -- Read ALL Example
-                a = fSql_read_all("cliente")
-                print("Cliente:", a)
-                a = fSql_read_all("vendedor")
-                print("vendedor:", a)
-                a = True
-            case 6:  # -- update one or many example
-                dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
-                a = fsql_update_line("vendedor", "id", 2, dictUpdate)
-            case 7:  # -- Delete Example (one or many)
-                a = fsql_delete_line("client", "id", 5)
-            case _:  # case default
-                a = "No valid option entered"
+        if op == 1:  # -- CREATE DB and tables
+            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                        "age:integer", "heigth:real", "address:text", "CPF:text"]
+            a = fSql_create_Table("cliente", aHeaders)
+            aHeaders = ["Id:integer PRIMARY KEY", "Name:text",
+                        "salary:real", "sells:ïnteger"]
+            a = fSql_create_Table("vendedor", aHeaders)
+        elif op == 2:  # -- ADD with all fields
+            dictAdd = {"ID": 4, "name": "Kelson",
+                       "age": 44, "heigth": 4.44, "address": "Avenida", "CPF": "444444"}
+            a = fSql_add("cliente", dictAdd)
+            dictAdd = {"ID": 4, "name": "Xena",
+                       "salary": 4400, "sells": 140}
+            a = fSql_add("vendedor", dictAdd)
+        elif op == 3:  # -- ADD with some fields
+            dictAdd = {"name": "Basel", "country": "Brasil",
+                       "city": "Curitiba", "date_nasc": "10/06/2022"}
+            a = fSql_add("client", dictAdd)
+            dictAdd = {"name": "Nóia",
+                       "manager": "Pó", "active": "False"}
+            a = fSql_add("retailer", dictAdd)
+        elif op == 4:  # -- Read One Example
+            a = fsql_read_one("Cliente", "id", 1)
+        elif op == 5:  # -- Read ALL Example
+            a = fSql_read_all("cliente")
+            print("Cliente:", a)
+            a = fSql_read_all("vendedor")
+            print("vendedor:", a)
+            a = True
+        elif op == 6:  # -- update one or many example
+            dictUpdate = {"id": 2, "NamE": "Tanos", "sells": 999}
+            a = fsql_update_line("vendedor", "id", 2, dictUpdate)
+        elif op == 7:  # -- Delete Example (one or many)
+            a = fsql_delete_line("client", "id", 5)
+        else:  # default
+            a = "No valid option entered"
 
         print(a)
     except ValueError as error:
