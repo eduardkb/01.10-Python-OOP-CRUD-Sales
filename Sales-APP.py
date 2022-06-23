@@ -1,6 +1,16 @@
 """
 TODO TODO
--- give option to cancel Update and add as well
+-- while updating client
+    -- before sending each field to database trim() values. check if 1 space is trimmed
+    -- if field is empty correct string to show what is currently there (write empty3)
+-- update Client
+    -- give option to cancel Update
+-- update Retailer
+    -- give option to cancel Update
+-- add sell
+    -- give option to cancel add
+-- Create function on class to sum sells per retailer and TOTAL
+
 -- validate some filelds with the class while adding
 not urgent
 -- when printing list format float value
@@ -96,7 +106,8 @@ def fEnter_client():
             fAdd_new("Clients")
             input("Press any key to return.")
         elif op == '3':
-            pass
+            fModify("Clients")
+            input("Press any key to return.")
         elif op == '4':
             fDelete_Item("Clients")
 
@@ -130,7 +141,8 @@ def fEnter_Retailer():
             fAdd_new("Retailers")
             input("Press any key to return.")
         elif op == '3':
-            pass
+            fModify("Retailers")
+            input("Press any key to return.")
         elif op == '4':
             fDelete_Item("Retailers")
 
@@ -265,6 +277,7 @@ def fAdd_new(table):
 def fValidateClientInput():
     # Init fields: id, cpf, name, country, city, phone, date_nasc
     val = []
+    # input and validate CPF
     sCpf = ''
     while sCpf == '' or len(sCpf) <= 5:
         sCpf = input("Client CPF: ")
@@ -273,6 +286,7 @@ def fValidateClientInput():
         if sCpf == '' or len(sCpf) <= 5:
             print("INFO: Incorrect input. CPF has at least 6 digits.")
     val.append(sCpf)
+    # input and validate sName
     sName = ''
     while sName == '' or len(sName) <= 5:
         sName = input("Client Name: ")
@@ -281,18 +295,22 @@ def fValidateClientInput():
         if sName == '' or len(sName) <= 5:
             print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
     val.append(sName)
+    # input country
     sCountry = input("Client Country: ")
     if sCountry == '0':
         return 0
     val.append(sCountry)
+    # input city
     sCity = input("Client City: ")
     if sCity == '0':
         return 0
     val.append(sCity)
+    # input phone
     sPhone = input("Client Phone: ")
     if sPhone == '0':
         return 0
     val.append(sPhone)
+    # input birthday
     sDate_nasc = input("Client Birthday: ")
     if sDate_nasc == '0':
         return 0
@@ -353,6 +371,100 @@ def fValidateRetailerInput():
             print("\nInfo: Invalid input. Please type 'y' or 'n'.")
 
     return val
+
+
+def fModify(table):
+    if table == "Clients":
+        op = ''
+        while op == '':
+            fTable_print_items(backend.Client.all_items, table)
+            op = input("\nType a client ID to change (or 0 to cancel): ")
+            if op != '0':
+                try:
+                    cliOBJ = backend.Client.getObjectByID(op)
+                    if cliOBJ == 0:
+                        print(
+                            "\nERROR: Invalid Client ID entered. Plase select a valid ID.")
+                        input("Press any key to continue.")
+                        op = ''
+                except Exception as e:
+                    print('\nERROR: Unable to get client to update: ', e)
+
+        if op != '0':
+            dictUpdate = fValidateClientChange(op, cliOBJ)
+            if dictUpdate != 0:
+                try:
+                    backend.Client.fUpdate_line(op, dictUpdate)
+                    print('\nINFO: Client changed successfully.')
+                except Exception as e:
+                    print('\nERROR: Unable to change client: ', e)
+            else:
+                print("\nINFO: Changing Client cancelled")
+        else:
+            print('\nINFO: Modifying Client cancelled.')
+    if table == "Retailers":
+        pass
+
+
+def fValidateClientChange(id, cliOBJ):
+    fPrint_submenu_title(f'Updating Client {id}: {cliOBJ.name}')
+    # dictUpdate = {"cpf": 999, "name": "Zuleima", "country": "Italy",
+    #               "city": "Rome", "phone": 9999, "date_nasc": "11/11/1111"}
+
+    dictUpdate = {}
+    print('Enter new value for each field, \nenter to continue with same value or 0 to canecl edit.')
+
+    sCpf = ''
+    while sCpf == '' or len(sCpf) <= 5:
+        sCpf = input(f"\nClient CPF (Currently {cliOBJ.cpf}): ")
+        if sCpf == '0':
+            return 0
+        if sCpf == '':
+            sCpf = cliOBJ.cpf
+        if sCpf == '' or len(sCpf) <= 5:
+            print("INFO: Incorrect input. CPF has at least 6 digits.")
+    dictUpdate['cpf'] = sCpf
+    # input and validate sName
+    sName = ''
+    while sName == '' or len(sName) <= 5:
+        sName = input(f"\nClient Name (Currently {cliOBJ.name}): ")
+        if sName == '0':
+            return 0
+        if sName == '':
+            sName = cliOBJ.name
+        if sName == '' or len(sName) <= 5:
+            print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
+    dictUpdate['name'] = sName
+    # input country
+    sCountry = input(f"\nClient Country (Currently {cliOBJ.country}): ")
+    if sCountry == '':
+        sCountry = cliOBJ.country
+    if sCountry == '0':
+        return 0
+    dictUpdate['country'] = sCountry
+    # input city
+    sCity = input(f"\nClient City (Currently {cliOBJ.city}): ")
+    if sCity == '':
+        sCity = cliOBJ.city
+    if sCity == '0':
+        return 0
+    dictUpdate['city'] = sCity
+    # input phone
+    sPhone = input(f"\nClient Phone (Currently {cliOBJ.phone}): ")
+    if sPhone == '':
+        sPhone = cliOBJ.phone
+    if sPhone == '0':
+        return 0
+    dictUpdate['phone'] = sPhone
+    # input birthday
+    sDate_nasc = input(f"\nClient Country (Currently {cliOBJ.date_nasc}): ")
+    if sDate_nasc == '':
+        sDate_nasc = cliOBJ.date_nasc
+    if sDate_nasc == '0':
+        return 0
+    dictUpdate['date_nasc'] = sDate_nasc
+
+    return dictUpdate
 
 
 def fDelete_Item(table):

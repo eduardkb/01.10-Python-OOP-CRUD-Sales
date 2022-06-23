@@ -100,6 +100,16 @@ class Client():
             x for x in Client.all_items if str(x.id) != str(id_search)]
 
     @staticmethod
+    def getObjectByID(id):
+        id_search = str(id)
+        obj = next((x for x in Client.all_items if str(
+            x.id) == str(id_search)), None)
+        if obj == None:
+            return 0
+        else:
+            return obj
+
+    @staticmethod
     def fGet_next_id():
         # if all items is empty, read all items
         if len(Client.all_items) == 0:
@@ -200,6 +210,16 @@ class Retailer():
         # delete item from list (making a new list)
         Retailer.all_items = [
             x for x in Retailer.all_items if str(x.id) != str(id_search)]
+
+    @staticmethod
+    def getObjectByID(id):
+        id_search = str(id)
+        obj = next((x for x in Client.all_items if str(
+            x.id) == str(id_search)), None)
+        if obj == None:
+            return 0
+        else:
+            return obj
 
     @staticmethod
     def fGet_next_id():
