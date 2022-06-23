@@ -1,10 +1,5 @@
 """
 TODO TODO
--- while updating client
-    -- before sending each field to database trim() values. check if 1 space is trimmed
-    -- if field is empty correct string to show what is currently there (write empty3)
--- update Client
-    -- give option to cancel Update
 -- update Retailer
     -- give option to cancel Update
 -- add sell
@@ -416,7 +411,8 @@ def fValidateClientChange(id, cliOBJ):
 
     sCpf = ''
     while sCpf == '' or len(sCpf) <= 5:
-        sCpf = input(f"\nClient CPF (Currently {cliOBJ.cpf}): ")
+        sCpf = input(
+            f"\nClient CPF (Currently {cliOBJ.cpf if cliOBJ.cpf != '' else 'EMPTY'}): ")
         if sCpf == '0':
             return 0
         if sCpf == '':
@@ -427,7 +423,8 @@ def fValidateClientChange(id, cliOBJ):
     # input and validate sName
     sName = ''
     while sName == '' or len(sName) <= 5:
-        sName = input(f"\nClient Name (Currently {cliOBJ.name}): ")
+        sName = input(
+            f"\nClient Name (Currently {cliOBJ.name if cliOBJ.name != '' else 'EMPTY'}): ")
         if sName == '0':
             return 0
         if sName == '':
@@ -436,28 +433,36 @@ def fValidateClientChange(id, cliOBJ):
             print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
     dictUpdate['name'] = sName
     # input country
-    sCountry = input(f"\nClient Country (Currently {cliOBJ.country}): ")
+    sCountry = input(
+        f"\nClient Country (Currently {cliOBJ.country if cliOBJ.country != '' else 'EMPTY'}): ")
+    sCountry = sCountry.strip()
     if sCountry == '':
         sCountry = cliOBJ.country
     if sCountry == '0':
         return 0
     dictUpdate['country'] = sCountry
     # input city
-    sCity = input(f"\nClient City (Currently {cliOBJ.city}): ")
+    sCity = input(
+        f"\nClient City (Currently {cliOBJ.city if cliOBJ.city != '' else 'EMPTY'}): ")
+    sCity = sCity.strip()
     if sCity == '':
         sCity = cliOBJ.city
     if sCity == '0':
         return 0
     dictUpdate['city'] = sCity
     # input phone
-    sPhone = input(f"\nClient Phone (Currently {cliOBJ.phone}): ")
+    sPhone = input(
+        f"\nClient Phone (Currently {cliOBJ.phone if cliOBJ.phone != '' else 'EMPTY'}): ")
+    sPhone = sPhone.strip()
     if sPhone == '':
         sPhone = cliOBJ.phone
     if sPhone == '0':
         return 0
     dictUpdate['phone'] = sPhone
     # input birthday
-    sDate_nasc = input(f"\nClient Country (Currently {cliOBJ.date_nasc}): ")
+    sDate_nasc = input(
+        f"\nClient Country (Currently {cliOBJ.date_nasc if cliOBJ.date_nasc != '' else 'EMPTY'}): ")
+    sDate_nasc = sDate_nasc.strip()
     if sDate_nasc == '':
         sDate_nasc = cliOBJ.date_nasc
     if sDate_nasc == '0':

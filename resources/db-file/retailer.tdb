@@ -7,7 +7,3 @@ id,cpf,name,manager,salary,active
 6,345,Xanti,Tiago,1234,True
 7,567,Welington,Ricardo,3400,True
 8,456,Udo,Ricardo,2800,True
-9,123753,Igor Maranhao,Adelfina,1542.44,y
-10,asdfgg,asdfgh,asdfgh,asdfgh,True
-11,345678,Rachel,Erika,4585.0,True
-12,4859607,Quixia,Yolanda,450.0,False
