@@ -1,10 +1,7 @@
 """
 TODO TODO
--- add sell
-    -- give option to cancel add
 -- Create function on class to sum sells per retailer and TOTAL
 
--- validate some filelds with the class while adding
 not urgent
 -- when printing list format float value
 -- for file_DB Windows does not read or write special characters (Encodeng utf-8 ???)
@@ -240,10 +237,9 @@ def fTable_print_items(items, table):
 
 
 def fAdd_new(table):
-    fPrint_submenu_title(f"Adding {table}")
-    print("Type a value for each field (0 at any field to cancel):")
-
     if table == "Clients":
+        fPrint_submenu_title(f"Adding {table}")
+        print("Type a value for each field (0 at any field to cancel):")
         val = fValidateClientInput()
         if val == 0:
             print("\nINFO: Adding client was cancelled.")
@@ -255,6 +251,8 @@ def fAdd_new(table):
             except Exception as e:
                 print(f"\nERROR: Could not add new Client: {e}")
     if table == "Retailers":
+        fPrint_submenu_title(f"Adding {table}")
+        print("Type a value for each field (0 at any field to cancel):")
         val = fValidateRetailerInput()
         if val == 0:
             print("\nINFO: Adding retailer was cancelled.")
@@ -266,7 +264,20 @@ def fAdd_new(table):
             except Exception as e:
                 print(f"\nERROR: Could not add new Retailer: {e}")
     if table == "Sells":
-        pass
+        iRetID = fGetRetailerID()
+        if iRetID != False:
+            iCliID = fGetClientID()
+            if iCliID != False:
+                fPrint_submenu_title(f"Adding {table}")
+                dictUpdate = fValidateSellInput()
+                if dictUpdate != False:
+                    #write sell to database
+                    try:
+                        backend.Sale(0,iRetID, iCliID, dictUpdate["item"], dictUpdate["price"])
+                        print("\nINFO: Sell registered successfully.")
+                    except Exception as e:
+                        print("\nError. Unable to add sell: ", e)
+        
 
 
 def fValidateClientInput():
@@ -367,6 +378,79 @@ def fValidateRetailerInput():
 
     return val
 
+def fValidateSellInput():
+    print("Enter the sell details Below:")
+    dictUpdate = {}
+   
+    # input Item
+    sItem = ''
+    while sItem == '':
+        sItem = input("Type item name (0 to cancel): ")
+        sItem = sItem.strip()
+        if sItem == '0':
+            print("\nINFO: Sell regitration cancelled.")
+            return False
+        elif len(sItem) < 3:
+            print("\nINFO: Item cannot be blank and must have at least 3 characters.")
+            sItem = ''
+        else:
+             dictUpdate["item"] = sItem
+
+    # input Price    
+    fPrice = ''
+    while fPrice == '':
+        fPrice =  input("Type item's price (0 to cancel): ")
+        fPrice = fPrice.strip()
+        if fPrice == '0':
+            print("\nINFO: Sell regitration cancelled.")
+            return False
+        else:
+            try:
+                fPrice = float(fPrice)
+                dictUpdate["price"] = fPrice
+            except Exception as e:
+                print("INFO: Invalid number entered. Expected format: 1200.50. ", e)
+                fPrice = ''
+        
+    return dictUpdate
+
+def fGetClientID():
+    fTable_print_items(backend.Client.all_items, "Clients")
+    iCliID = ''
+    while iCliID == '':
+        iCliID = input("\nSelect a Client ID for the sell (0 or enter to cancel): ")
+        if iCliID == '0' or iCliID == '':
+            print("INFO: Adding a new sell was cancelled")
+            return False
+        try:
+            cliOBJ = backend.Client.getObjectByID(iCliID)
+            if cliOBJ == 0:
+                print("INFO: Invalid ID. Please select an ID from table above.")
+                iCliID = ''
+            else:
+                return iCliID
+        except Exception as e:
+            print("ERROR: Problem while getting the Client. Try selecting again: ",e)
+            iCliID = ''
+
+def fGetRetailerID():
+    fTable_print_items(backend.Retailer.all_items, "Retailers")
+    iRetID = ''
+    while iRetID == '':
+        iRetID = input("\nSelect a Retailer ID for the sell (0 or enter to cancel): ")
+        if iRetID == '0' or iRetID == '':
+            print("INFO: Adding a new sell was cancelled")
+            return False
+        try:
+            cliOBJ = backend.Retailer.getObjectByID(iRetID)
+            if cliOBJ == 0:
+                print("INFO: Invalid ID. Please select an ID from table above.")
+                iRetID = ''
+            else:
+                return iRetID
+        except Exception as e:
+            print("ERROR: Problem while getting the Retailer. Try selecting again: ",e)
+            iRetID = ''
 
 def fModify(table):
     if table == "Clients":

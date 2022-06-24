@@ -8,3 +8,8 @@ id,id_retailer,id_client,item_sold,price
 7,6,15,Celular,850
 8,7,7,Laptop,2500.99
 9,8,8,Óculos,82
+10,7,12,Caixa,155.66
+11,1,10,Copo,19.99
+12,1,1,asx,55880.52
+13,7,7,Brinquedo,150.9875
+14,4,4,Celular,1580.5846
