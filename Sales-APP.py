@@ -1,9 +1,9 @@
 """
 TODO TODO
--- Create function on class to sum sells per retailer and TOTAL
+-- 
 
 not urgent
--- when printing list format float value
+-- fix float values formatting on all table printings
 -- for file_DB Windows does not read or write special characters (Encodeng utf-8 ???)
     -- works on linux. when windows fixed, test linux again.
 
@@ -152,10 +152,11 @@ def fEnter_Sells():
         fPrint_submenu_title("Sells Registration")
         print("1 - List all Sells")
         print("2 - Add a new Sell")
+        print("3 - Print sells per retailer")
         print("5 - Back to Main Menu")
 
         op = str(input("Select an option: "))
-        if op not in ['1', '2', '3', '4', '5']:
+        if op not in ['1', '2', '3', '5']:
             print("\nINFO: Invalid option.")
             input("Press any key to return.")
 
@@ -165,6 +166,9 @@ def fEnter_Sells():
         elif op == '2':
             fAdd_new("Sells")
             input("Press any key to return.")
+        elif op == '3':
+            fPrintSellSum()
+            input("\nPress any key to return.")
 
 ######################################################
 # General Functions
@@ -191,7 +195,6 @@ def fCreate_database():
         print("ERROR: Database couldn't be created: ", e)
 
     input("\nPress any key to return to main menu.")
-
 
 def fTable_print_items(items, table):
     fPrint_submenu_title(f"List of {table}")
@@ -235,7 +238,6 @@ def fTable_print_items(items, table):
             fPrint_submenu_title(f"List of {table}")
             print(f"INFO: {table} table is empty.")
 
-
 def fAdd_new(table):
     if table == "Clients":
         fPrint_submenu_title(f"Adding {table}")
@@ -278,8 +280,6 @@ def fAdd_new(table):
                     except Exception as e:
                         print("\nError. Unable to add sell: ", e)
         
-
-
 def fValidateClientInput():
     # Init fields: id, cpf, name, country, city, phone, date_nasc
     val = []
@@ -322,7 +322,6 @@ def fValidateClientInput():
         return 0
     val.append(sDate_nasc)
     return val
-
 
 def fValidateRetailerInput():
     # cpf, name, manager, salary, active
@@ -509,7 +508,6 @@ def fModify(table):
                 print("\nINFO: Changing retailer cancelled")
         else:
             print('\nINFO: Modifying retailer cancelled.')
-
 
 def fValidateClientChange(id, cliOBJ):
     fPrint_submenu_title(f'Updating Client {id}: {cliOBJ.name}')
@@ -718,6 +716,18 @@ def fDelete_Item(table):
             print(f"INFO: {table} table has no items. Nothing to delete.")
             input("\nPress any key to continue")
 
+def fPrintSellSum():
+    fPrint_submenu_title("Sells per retailer")
+    tab = backend.Sale.fGetTotalSells()
+    if len(tab) > 0:
+        head = ["Seller ID", "Seller Name", "Sell Count", "Sell Value"]
+        row = "{id:<15}| {name:<15}| {cnt:>15} | {val:>15}".format
+        print(row(id=head[0], name=head[1], cnt=head[2], val=head[3]))
+        print("-"*80)
+        for tup in tab:
+            print(row(id=tup[0], name=tup[1], cnt=tup[2], val=tup[3]))
+    else:
+        print(f"INFO: No sells sum.")
 
 def start_CLI():
     fMain_menu()

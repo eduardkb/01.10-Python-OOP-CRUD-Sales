@@ -364,6 +364,26 @@ class Sale():
                 id_max = int(obj.id)
         return id_max + 1
 
+    @staticmethod
+    def fGetTotalSells():
+        sellsTable = []
+        for retObj in Retailer.all_items:
+            iCount = 0
+            iVal = 0
+            for salObj in Sale.all_items:
+                if str(salObj.id_retailer) == str(retObj.id):
+                    iCount += 1
+                    try:
+                        iVal += float(salObj.price)
+                    except Exception:
+                        pass
+            
+            sellsTable.append((retObj.id, retObj.name, iCount, iVal))
+
+        
+        sellsTable.sort(key=lambda x: x[3], reverse=True)
+        return sellsTable
+
 
 def fTest_add(objTest_Class):
     if objTest_Class == "Client":
