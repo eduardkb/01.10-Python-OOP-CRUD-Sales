@@ -1,7 +1,12 @@
 """
 TODO TODO
 urgent
--- 
+-- on change, when table is empty app is asking for ID. just inform table is empty
+    -- client
+    -- retailer
+    -- sale
+-- on table list of clients
+    -- phone not being truncated because it is a integer
 not urgent
 -- for file_DB Windows does not read or write special characters (Encodeng utf-8 ???)
     -- works on linux. when windows fixed, test linux again.
@@ -10,7 +15,7 @@ not urgent
 
 import resources.backend as backend
 import resources.ekbMod as ekbMod
-bDEBUG = True
+bDEBUG = False
 
 
 ######################################################
@@ -39,17 +44,19 @@ def fMain_menu():
 
 def fPrint_main_Menu():
     ekbMod.clear_scren()
+    c = chr(176)  # °
+    c = chr(187)  # »
+    
     print(" "*27 + "╔═══════════════════════╗")
     print(" "*27 + "║   Sales - Main Menu   ║")
     print(" "*27 + "╚═══════════════════════╝")
-
     print("╔═════════════════════════════════════════════════════════════════════════════╗")
     print("║                                                                             ║")
-    print("║       🢡  1 - Create database                                                ║")
-    print("║       🢡  2 - Client Registration                                            ║")
-    print("║       🢡  3 - Retailer Registration                                          ║")
-    print("║       🢡  4 - Sells Registration                                             ║")
-    print("║       🢡  5 - Exit                                                           ║")
+    print(f"║       {c}  1 - Create database                                                ║")
+    print(f"║       {c}  2 - Client Registration                                            ║")
+    print(f"║       {c}  3 - Retailer Registration                                          ║")
+    print(f"║       {c}  4 - Sells Registration                                             ║")
+    print(f"║       {c}  5 - Exit                                                           ║")
     print("║                                                                             ║")
     print("╚═════════════════════════════════════════════════════════════════════════════╝")
 
@@ -201,7 +208,7 @@ def fTable_print_items(items, table):
         if len(items) > 0:
             head = ["ID", "CPF", "Name", "Country",
                     "City", "Phone", "Birthday"]
-            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Country:<15}| {City:<15}| {Phone:<10}| {Birthday:^10}".format
+            row = "{id:<4}| {CPF:<10.9}| {Name:<15.14}| {Country:<15.14}| {City:<15.14}| {Phone:<10}| {Birthday:^10.10}".format
             print(row(id=head[0], CPF=head[1], Name=head[2], Country=head[3],
                       City=head[4], Phone=head[5], Birthday=head[6]))
             print("-"*80)
@@ -213,10 +220,10 @@ def fTable_print_items(items, table):
     elif table == "Retailers":
         if len(items) > 0:
             head = ["ID", "CPF", "Name", "Manager", "Salary"]
-            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:>10}".format
+            row = "{id:<4}| {CPF:<10.10}| {Name:<15.15}| {Manager:<15.15}| {Salary:>10}".format
             print(row(id=head[0], CPF=head[1], Name=head[2], Manager=head[3],
                       Salary=head[4]))
-            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:>10,.2F}".format
+            row = "{id:<4}| {CPF:<10.9}| {Name:<15.14}| {Manager:<15.14}| {Salary:>10,.2F}".format
             print("-"*80)
             for tup in items:
                 try:
@@ -231,10 +238,10 @@ def fTable_print_items(items, table):
     elif table == "Sells":
         if len(items) > 0:
             head = ["ID", "Retailer", "Client", "Item Sold", "Price"]
-            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:>10}".format
+            row = "{id:<4}| {ret:<15}| {cli:<15}| {item:<20}| {price:>10}".format
             print(row(id=head[0], ret=head[1], cli=head[2], item=head[3],
                       price=head[4]))
-            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:>10,.2f}".format
+            row = "{id:<4}| {ret:<15.14}| {cli:<15.14}| {item:<20.19}| {price:>10,.2f}".format
             print("-"*80)
             for tup in items:
                 try:
@@ -730,9 +737,9 @@ def fPrintSellSum():
     tab = backend.Sale.fGetTotalSells()
     if len(tab) > 0:
         head = ["Seller ID", "Seller Name", "Sell Count", "Sell Value"]
-        row = "{id:<15}| {name:<15}| {cnt:>15} | {val:>15}".format
+        row = "{id:<10}| {name:<20}| {cnt:>12} | {val:>15}".format
         print(row(id=head[0], name=head[1], cnt=head[2], val=head[3]))
-        row = "{id:<15}| {name:<15}| {cnt:>15} | {val:>15,.2F}".format
+        row = "{id:<10}| {name:<20.19}| {cnt:>12} | {val:>15,.2F}".format
         print("-"*80)
         for tup in tab:
             print(row(id=tup[0], name=tup[1], cnt=tup[2], val=tup[3]))
