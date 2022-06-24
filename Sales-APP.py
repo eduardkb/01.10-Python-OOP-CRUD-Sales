@@ -1,10 +1,6 @@
 """
 TODO TODO
 urgent
--- on change, when table is empty app is asking for ID. just inform table is empty
-    -- client
-    -- retailer
-    -- sale
 -- on table list of clients
     -- phone not being truncated because it is a integer
 not urgent
@@ -214,7 +210,7 @@ def fTable_print_items(items, table):
             print("-"*80)
             for tup in items:
                 print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Country=tup.country,
-                          City=tup.city, Phone=tup.phone, Birthday=tup.date_nasc))
+                          City=tup.city, Phone=tup.phone, Birthday=str(tup.date_nasc)))
         else:
             print(f"INFO: {table} table is empty.")
     elif table == "Retailers":
@@ -430,6 +426,10 @@ def fValidateSellInput():
     return dictUpdate
 
 def fGetClientID():
+    if len(backend.Client.all_items) < 1:
+        fPrint_submenu_title(f"List of Clients")
+        print("INFO: There are no Clients to select from. Adding a new sell was cancelled")
+        return False
     fTable_print_items(backend.Client.all_items, "Clients")
     iCliID = ''
     while iCliID == '':
@@ -449,6 +449,10 @@ def fGetClientID():
             iCliID = ''
 
 def fGetRetailerID():
+    if len(backend.Retailer.all_items) < 1:
+        fPrint_submenu_title(f"List of Retailers")
+        print("INFO: There are no Retailers to select from. Adding a new sell was cancelled")
+        return False
     fTable_print_items(backend.Retailer.all_items, "Retailers")
     iRetID = ''
     while iRetID == '':
@@ -467,63 +471,71 @@ def fGetRetailerID():
             print("ERROR: Problem while getting the Retailer. Try selecting again: ",e)
             iRetID = ''
 
-def fModify(table):
+def fModify(table):    
     if table == "Clients":
-        op = ''
-        while op == '':
-            fTable_print_items(backend.Client.all_items, table)
-            op = input("\nType a client ID to change (or 0 to cancel): ")
-            if op != '0':
-                try:
-                    cliOBJ = backend.Client.getObjectByID(op)
-                    if cliOBJ == 0:
-                        print(
-                            "\nERROR: Invalid Client ID entered. Plase select a valid ID.")
-                        input("Press any key to continue.")
-                        op = ''
-                except Exception as e:
-                    print('\nERROR: Unable to get client to update: ', e)
+        if len(backend.Client.all_items) > 0:
+            op = ''
+            while op == '':
+                fTable_print_items(backend.Client.all_items, table)
+                op = input("\nType a client ID to change (or 0 to cancel): ")
+                if op != '0':
+                    try:
+                        cliOBJ = backend.Client.getObjectByID(op)
+                        if cliOBJ == 0:
+                            print(
+                                "\nERROR: Invalid Client ID entered. Plase select a valid ID.")
+                            input("Press any key to continue.")
+                            op = ''
+                    except Exception as e:
+                        print('\nERROR: Unable to get client to update: ', e)
 
-        if op != '0':
-            dictUpdate = fValidateClientChange(op, cliOBJ)
-            if dictUpdate != 0:
-                try:
-                    backend.Client.fUpdate_line(op, dictUpdate)
-                    print('\nINFO: Client changed successfully.')
-                except Exception as e:
-                    print('\nERROR: Unable to change client: ', e)
+            if op != '0':
+                dictUpdate = fValidateClientChange(op, cliOBJ)
+                if dictUpdate != 0:
+                    try:
+                        backend.Client.fUpdate_line(op, dictUpdate)
+                        print('\nINFO: Client changed successfully.')
+                    except Exception as e:
+                        print('\nERROR: Unable to change client: ', e)
+                else:
+                    print("\nINFO: Changing Client cancelled")
             else:
-                print("\nINFO: Changing Client cancelled")
+                print('\nINFO: Modifying Client cancelled.')
         else:
-            print('\nINFO: Modifying Client cancelled.')
+            fPrint_submenu_title(f"List of {table}")
+            print('\nINFO: Client table is empty. Nothing to modify.')
     if table == "Retailers":
-        op = ''
-        while op == '':
-            fTable_print_items(backend.Retailer.all_items, table)
-            op = input("\nType a retailer ID to change (or 0 to cancel): ")
-            if op != '0':
-                try:
-                    cliOBJ = backend.Retailer.getObjectByID(op)
-                    if cliOBJ == 0:
-                        print(
-                            "\nERROR: Invalid Retailer ID entered. Plase select a valid ID.")
-                        input("Press any key to continue.")
-                        op = ''
-                except Exception as e:
-                    print('\nERROR: Unable to get retailer to update: ', e)
+        if len(backend.Retailer.all_items) > 0:
+            op = ''
+            while op == '':
+                fTable_print_items(backend.Retailer.all_items, table)
+                op = input("\nType a retailer ID to change (or 0 to cancel): ")
+                if op != '0':
+                    try:
+                        cliOBJ = backend.Retailer.getObjectByID(op)
+                        if cliOBJ == 0:
+                            print(
+                                "\nERROR: Invalid Retailer ID entered. Plase select a valid ID.")
+                            input("Press any key to continue.")
+                            op = ''
+                    except Exception as e:
+                        print('\nERROR: Unable to get retailer to update: ', e)
 
-        if op != '0':
-            dictUpdate = fValidateRetailerChange(op, cliOBJ)
-            if dictUpdate != 0:
-                try:
-                    backend.Retailer.fUpdate_line(op, dictUpdate)
-                    print('\nINFO: Retailer changed successfully.')
-                except Exception as e:
-                    print('\nERROR: Unable to change retailer: ', e)
+            if op != '0':
+                dictUpdate = fValidateRetailerChange(op, cliOBJ)
+                if dictUpdate != 0:
+                    try:
+                        backend.Retailer.fUpdate_line(op, dictUpdate)
+                        print('\nINFO: Retailer changed successfully.')
+                    except Exception as e:
+                        print('\nERROR: Unable to change retailer: ', e)
+                else:
+                    print("\nINFO: Changing retailer cancelled")
             else:
-                print("\nINFO: Changing retailer cancelled")
+                print('\nINFO: Modifying retailer cancelled.')
         else:
-            print('\nINFO: Modifying retailer cancelled.')
+            fPrint_submenu_title(f"List of {table}")
+            print('\nINFO: Retailer table is empty. Nothing to modify.')
 
 def fValidateClientChange(id, cliOBJ):
     fPrint_submenu_title(f'Updating Client {id}: {cliOBJ.name}')
