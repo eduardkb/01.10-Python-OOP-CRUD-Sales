@@ -1,7 +1,5 @@
 """
 TODO TODO
--- update Retailer
-    -- give option to cancel Update
 -- add sell
     -- give option to cancel add
 -- Create function on class to sum sells per retailer and TOTAL
@@ -9,6 +7,8 @@ TODO TODO
 -- validate some filelds with the class while adding
 not urgent
 -- when printing list format float value
+-- for file_DB Windows does not read or write special characters (Encodeng utf-8 ???)
+    -- works on linux. when windows fixed, test linux again.
 
 """
 
@@ -398,7 +398,33 @@ def fModify(table):
         else:
             print('\nINFO: Modifying Client cancelled.')
     if table == "Retailers":
-        pass
+        op = ''
+        while op == '':
+            fTable_print_items(backend.Retailer.all_items, table)
+            op = input("\nType a retailer ID to change (or 0 to cancel): ")
+            if op != '0':
+                try:
+                    cliOBJ = backend.Retailer.getObjectByID(op)
+                    if cliOBJ == 0:
+                        print(
+                            "\nERROR: Invalid Retailer ID entered. Plase select a valid ID.")
+                        input("Press any key to continue.")
+                        op = ''
+                except Exception as e:
+                    print('\nERROR: Unable to get retailer to update: ', e)
+
+        if op != '0':
+            dictUpdate = fValidateRetailerChange(op, cliOBJ)
+            if dictUpdate != 0:
+                try:
+                    backend.Retailer.fUpdate_line(op, dictUpdate)
+                    print('\nINFO: Retailer changed successfully.')
+                except Exception as e:
+                    print('\nERROR: Unable to change retailer: ', e)
+            else:
+                print("\nINFO: Changing retailer cancelled")
+        else:
+            print('\nINFO: Modifying retailer cancelled.')
 
 
 def fValidateClientChange(id, cliOBJ):
@@ -413,6 +439,7 @@ def fValidateClientChange(id, cliOBJ):
     while sCpf == '' or len(sCpf) <= 5:
         sCpf = input(
             f"\nClient CPF (Currently {cliOBJ.cpf if cliOBJ.cpf != '' else 'EMPTY'}): ")
+        sCpf = sCpf.strip()
         if sCpf == '0':
             return 0
         if sCpf == '':
@@ -425,6 +452,7 @@ def fValidateClientChange(id, cliOBJ):
     while sName == '' or len(sName) <= 5:
         sName = input(
             f"\nClient Name (Currently {cliOBJ.name if cliOBJ.name != '' else 'EMPTY'}): ")
+        sName = sName.strip()
         if sName == '0':
             return 0
         if sName == '':
@@ -471,6 +499,98 @@ def fValidateClientChange(id, cliOBJ):
 
     return dictUpdate
 
+def fValidateRetailerChange(id, cliOBJ):
+    fPrint_submenu_title(f'Updating Retailer {id}: {cliOBJ.name}')
+    # dictUpdate = {"cpf": 899, "name": "Udo", "manager": "Jota",
+    #                       "salary": 1000, "active": True}
+
+    dictUpdate = {}
+    print('Enter new value for each field, \nenter to continue with same value or 0 to canecl edit.')
+
+    # input and validate cpf
+    sCpf = ''
+    while sCpf == '' or len(sCpf) <= 5:
+        sCpf = input(
+            f"\nRetailer CPF (Currently {cliOBJ.cpf if cliOBJ.cpf != '' else 'EMPTY'}): ")
+        sCpf = sCpf.strip()
+        if sCpf == '0':
+            return 0
+        if sCpf == '':
+            sCpf = cliOBJ.cpf
+        if sCpf == '' or len(sCpf) <= 5:
+            print("INFO: Incorrect input. CPF has at least 6 digits.")
+    dictUpdate['cpf'] = sCpf
+    # input and validate sName
+    sName = ''
+    while sName == '' or len(sName) <= 5:
+        sName = input(
+            f"\nRetailer Name (Currently {cliOBJ.name if cliOBJ.name != '' else 'EMPTY'}): ")
+        sName = sName.strip()
+        if sName == '0':
+            return 0
+        if sName == '':
+            sName = cliOBJ.name
+        if sName == '' or len(sName) <= 5:
+            print("INFO: Incorrect input. NAME has to be at least 6 digits long.")
+    dictUpdate['name'] = sName
+    # input manager
+    sManager = input(
+        f"\nRetailer Manager (Currently {cliOBJ.manager if cliOBJ.manager != '' else 'EMPTY'}): ")
+    sManager = sManager.strip()
+    if sManager == '':
+        sManager = cliOBJ.manager
+    if sManager == '0':
+        return 0
+    dictUpdate['manager'] = sManager
+    # input salary
+    fSalary = ''
+    while fSalary == '':
+        fSalary = input(
+            f"\nRetailer Salary (Currently {cliOBJ.salary if cliOBJ.salary != '' else 'EMPTY'}): ")
+        fSalary = fSalary.strip()
+        if fSalary == '':
+            fSalary = cliOBJ.salary
+        if fSalary == '0':
+            return 0
+        try:
+            fSalary = float(fSalary)
+            dictUpdate['salary'] = fSalary
+        except Exception as e:
+            print("INFO: Incorrect input. Salary has to be a number in format 1200.50.")
+            fSalary = ''
+    
+    # input active
+    bActive = ''
+    while bActive == '':
+        activeVal = ''
+        if cliOBJ.active == 'True':
+            activeVal = 'yes'
+        elif cliOBJ.active == 'False':
+            activeVal = 'no'
+        elif cliOBJ.active == '':
+            activeVal = ''
+        else:
+            activeVal = cliOBJ.active
+
+        bActive = input(
+            f"\nRetailer Active (yes/no) (Currently {activeVal}): ")
+        bActive = bActive.strip()
+        if bActive == '':
+            if cliOBJ.active == 'True':
+                bActive = 'yes'
+            elif cliOBJ.active == 'False':
+                bActive = 'no'
+        if bActive == '0':
+            return 0
+        if bActive in ['y', 'yes']:
+            dictUpdate['active'] = 'True'
+        elif bActive in ['n', 'no']:
+            dictUpdate['active'] = 'False'
+        else:
+            print("INFO: Incorrect input. Expected 'yes' or 'no'.")
+            bActive = ''
+
+    return dictUpdate
 
 def fDelete_Item(table):
     if table == "Clients":

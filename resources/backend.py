@@ -214,7 +214,7 @@ class Retailer():
     @staticmethod
     def getObjectByID(id):
         id_search = str(id)
-        obj = next((x for x in Client.all_items if str(
+        obj = next((x for x in Retailer.all_items if str(
             x.id) == str(id_search)), None)
         if obj == None:
             return 0

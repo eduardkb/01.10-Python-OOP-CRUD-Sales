@@ -3,7 +3,7 @@ TODO TODO
 Urgent
 --
 Not Urgent:
--- file -- (acentuaçao nao grava e nao lê) (Encodeng utf-8 ???)
+--
 """
 import resources.ekbMod as ekbMod
 import os
