@@ -1,9 +1,8 @@
 """
 TODO TODO
+urgent
 -- 
-
 not urgent
--- fix float values formatting on all table printings
 -- for file_DB Windows does not read or write special characters (Encodeng utf-8 ???)
     -- works on linux. when windows fixed, test linux again.
 
@@ -214,26 +213,36 @@ def fTable_print_items(items, table):
     elif table == "Retailers":
         if len(items) > 0:
             head = ["ID", "CPF", "Name", "Manager", "Salary"]
-            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:<10}".format
+            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:>10}".format
             print(row(id=head[0], CPF=head[1], Name=head[2], Manager=head[3],
                       Salary=head[4]))
+            row = "{id:<4}| {CPF:<10}| {Name:<15}| {Manager:<15}| {Salary:>10,.2F}".format
             print("-"*80)
             for tup in items:
+                try:
+                    sal = float(tup.salary)
+                except Exception:
+                    sal = float(0)
                 print(row(id=tup.id, CPF=tup.cpf, Name=tup.name, Manager=tup.manager,
-                          Salary=tup.salary))
+                          Salary=sal))
         else:
             fPrint_submenu_title(f"List of {table}")
             print(f"INFO: {table} table is empty.")
     elif table == "Sells":
         if len(items) > 0:
             head = ["ID", "Retailer", "Client", "Item Sold", "Price"]
-            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:<10}".format
+            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:>10}".format
             print(row(id=head[0], ret=head[1], cli=head[2], item=head[3],
                       price=head[4]))
+            row = "{id:<4}| {ret:<10}| {cli:<15}| {item:<15}| {price:>10,.2f}".format
             print("-"*80)
             for tup in items:
+                try:
+                    pri = float(tup.price)
+                except Exception:
+                    pri = float(0)
                 print(row(id=tup.id, ret=tup.retailer, cli=tup.client, item=tup.item_sold,
-                          price=tup.price))
+                          price=pri))
         else:
             fPrint_submenu_title(f"List of {table}")
             print(f"INFO: {table} table is empty.")
@@ -723,6 +732,7 @@ def fPrintSellSum():
         head = ["Seller ID", "Seller Name", "Sell Count", "Sell Value"]
         row = "{id:<15}| {name:<15}| {cnt:>15} | {val:>15}".format
         print(row(id=head[0], name=head[1], cnt=head[2], val=head[3]))
+        row = "{id:<15}| {name:<15}| {cnt:>15} | {val:>15,.2F}".format
         print("-"*80)
         for tup in tab:
             print(row(id=tup[0], name=tup[1], cnt=tup[2], val=tup[3]))
